@@ -4,7 +4,6 @@ from django.contrib.auth.forms import UserCreationForm, PasswordResetForm
 from django.contrib import messages
 from django.core.mail import send_mail
 
-
 def register(request):
     messages.info(request, 'Please fill the form below to register.')
     if request.method == 'POST':
@@ -24,13 +23,14 @@ def register(request):
 
 def login(request):
     if request.method == 'POST':
-        email = request.POST.get('email')
+        username = request.POST.get('username')
         password = request.POST.get('password')
-        if email and password:
-            user = authenticate(request, email=email, password=password) 
+        print(username, password)
+        if username and password:
+            user = authenticate(request, username=username, password=password) 
             if user is not None:
                 auth_login(request, user)
-                messages.info(request, f"You are now logged in as {email}.")
+                messages.info(request, f"You are now logged in as {username}.")
                 return redirect('myapp:store')
             else:
                 messages.error(request, "Invalid email or password.")
@@ -44,16 +44,16 @@ def forget_password(request):
     if request.method == 'POST':
         form = PasswordResetForm(request.POST)
         if form.is_valid():
-            email = form.cleaned_data.get('email')
+            username = form.cleaned_data.get('username')
             # Assuming you have configured email backend in Django settings
             send_mail(
                 'Password Reset Request',
                 'Please click the link to reset your password.',
                 'from@example.com',
-                [email],
+                [username],
                 fail_silently=False,
             )
-            messages.info(request, f'Password reset link sent to {email}.')
+            messages.info(request, f'Password reset link sent to {username}.')
             return redirect('authapp:login')
     else:
         form = PasswordResetForm()
