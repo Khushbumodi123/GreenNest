@@ -1,40 +1,63 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import login as auth_login, authenticate
-from django.contrib.auth.forms import AuthenticationForm,UserCreationForm, PasswordResetForm
+from django.contrib.auth import authenticate, login as auth_login, logout 
+from django.contrib.auth.forms import UserCreationForm, PasswordResetForm
+from django.contrib import messages
+from django.core.mail import send_mail
+
 
 def register(request):
+    messages.info(request, 'Please fill the form below to register.')
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            auth_login(request, user)
-            return redirect('myapp:store')
+            form.save()
+            username = form.cleaned_data.get('username')
+            messages.success(request, f'Account created for {username}!')
+            return redirect('authapp:login')
+        else:
+            # Handle form errors, e.g., display errors in the form
+            print(form.errors)
     else:
-        form = UserCreationForm()
-    return render(request, 'authApp/register.html', {'form': form})
+        messages.success(request, 'Please fill the form below to register.')
+        form = UserCreationForm()  # Create a new form instance for GET requests
+    return render(request, 'authapp/register.html', {'form': form})
 
 def login(request):
     if request.method == 'POST':
-        form = AuthenticationForm(request, data=request.POST)
-        if form.is_valid():
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
-            user = authenticate(username=username, password=password)
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        if email and password:
+            user = authenticate(request, email=email, password=password) 
             if user is not None:
                 auth_login(request, user)
+                messages.info(request, f"You are now logged in as {email}.")
                 return redirect('myapp:store')
+            else:
+                messages.error(request, "Invalid email or password.")
+        else:
+            messages.error(request, "Please provide both email and password.")
+        return redirect('authapp:login')
     else:
-        form = AuthenticationForm()
-    return render(request, 'authApp/login.html', {'form': form})
-
-
+        return render(request, 'authapp/login.html', {})
 
 def forget_password(request):
     if request.method == 'POST':
         form = PasswordResetForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect('myapp:store')
+            email = form.cleaned_data.get('email')
+            # Assuming you have configured email backend in Django settings
+            send_mail(
+                'Password Reset Request',
+                'Please click the link to reset your password.',
+                'from@example.com',
+                [email],
+                fail_silently=False,
+            )
+            messages.info(request, f'Password reset link sent to {email}.')
+            return redirect('authapp:login')
     else:
         form = PasswordResetForm()
-    return render(request, 'authApp/forget_password.html', {'form': form})
+    return render(request, 'authapp/forget_password.html', {'form': form})
+
+def password_reset_done(request):
+    return render(request, 'authapp/password_reset_done.html')

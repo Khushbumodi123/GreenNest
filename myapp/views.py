@@ -1,7 +1,5 @@
 from django.http import HttpResponse
-from django.shortcuts import render, redirect
-from django.contrib.auth import login as auth_login, authenticate
-from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, PasswordResetForm
+from django.shortcuts import render
 
 def store(request):
     context = {}
