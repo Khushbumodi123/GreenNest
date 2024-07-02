@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'myapp.apps.MyappConfig',
     'crispy_forms',
     'authapp',
+    'landingPage',
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
