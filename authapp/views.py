@@ -31,7 +31,7 @@ def login(request):
             if user is not None:
                 auth_login(request, user)
                 messages.info(request, f"You are now logged in as {username}.")
-                return redirect('landingPage:index')
+                return redirect('myapp:store')
             else:
                 messages.error(request, "Invalid email or password.")
         else:
