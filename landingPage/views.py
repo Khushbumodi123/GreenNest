@@ -1,8 +1,15 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
+from django.views import View
+from django.http import HttpResponseRedirect
+from .models import Category
+
 
 def index(request):
-    """View function for rendering the landing page."""
-    return render(request, 'landingPage/index.html')
+    categories = Category.objects.all()  # Fetch all categories from database
+    context = {
+        'categories': categories
+    }
+    return render(request, 'landingPage/index.html', context)
 
 def shop(request):
     """View function for rendering the shop page."""
@@ -31,3 +38,11 @@ def page_404(request, exception):
 def contact(request):
     """View function for rendering the contact page."""
     return render(request, 'contact.html')
+
+def product_list(request):
+    categories = Category.objects.all()
+    context = {
+        'categories': categories
+    }
+    return render(request, 'landingPage/product_list.html', context)
+
