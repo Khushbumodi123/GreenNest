@@ -1,13 +1,23 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect, get_object_or_404
 from django.views import View
 from django.http import HttpResponseRedirect
-from .models import Category
-
+from .models import Category, Product
 
 def index(request):
-    categories = Category.objects.all()  # Fetch all categories from database
+    categories = Category.objects.all()
+    products = Product.objects.all()
     context = {
-        'categories': categories
+        'categories': categories,
+        'products': products,
+    }
+    return render(request, 'landingPage/index.html', context)
+
+def category_products(request, category_id):
+    category = get_object_or_404(Category, pk=category_id)
+    products = Product.objects.filter(category=category)
+    context = {
+        'categories': Category.objects.all(),
+        'products': products,
     }
     return render(request, 'landingPage/index.html', context)
 
