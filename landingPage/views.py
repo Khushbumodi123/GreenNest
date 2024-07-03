@@ -10,6 +10,7 @@ def index(request):
         'categories': categories,
         'products': products,
     }
+    print(products[0].image.url)
     return render(request, 'landingPage/index.html', context)
 
 def category_products(request, category_id):
