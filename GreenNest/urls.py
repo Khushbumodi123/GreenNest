@@ -26,7 +26,7 @@ urlpatterns = [
     #path("", include('myapp.urls1')),
     path('', include('landingPage.urls')),
     #path('auth/', include('django.contrib.auth.urls')),
-    path('auth/', include('authapp.urls')),
+    #path('auth/', include('authapp.urls')),
     
 ]
 
