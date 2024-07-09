@@ -22,5 +22,5 @@ urlpatterns = [
     #path('order/<int:order_id>/', auth_middleware(views.order_detail), name='order_detail'),
     path('signup/', Signup.as_view(), name='signup'),
     path('login/', Login.as_view(), name='login'),
-    path('logout/', logout , name='logout'),
+    path('logout/', views.logout , name='logout'),
 ]

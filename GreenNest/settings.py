@@ -41,7 +41,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'myapp.apps.MyappConfig',
     'crispy_forms',
-    'authapp',
     'landingPage',
 ]
 
@@ -80,6 +79,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'GreenNest.wsgi.application'
 
+APPEND_SLASH = False
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
