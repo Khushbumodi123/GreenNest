@@ -2,6 +2,8 @@ from django.shortcuts import render,redirect, get_object_or_404
 from django.views import View
 from django.http import HttpResponseRedirect
 from .models import Category, Product, Customer, Order
+from django.contrib.auth.hashers import make_password
+from django.contrib.auth.hashers import  check_password
 
 def index(request):
     categories = Category.objects.all()
@@ -88,7 +90,7 @@ def order(request):
 
 class Signup(View):
     def get(self, request):
-        return render(request, 'signup.html')
+        return render(request, 'landingPage/signup.html')
 
     def post(self, request):
         postData = request.POST
@@ -123,7 +125,7 @@ class Signup(View):
                 'error': error_message,
                 'values': value
             }
-            return render(request, 'signup.html', data)
+            return render(request, 'landingPage/signup.html', data)
 
     def validateCustomer(self, customer):
         error_message = None;
@@ -154,7 +156,7 @@ class Login(View):
     return_url = None
     def get(self , request):
         Login.return_url = request.GET.get('return_url')
-        return render(request , 'login.html')
+        return render(request , 'landingPage/login.html')
 
     def post(self , request):
         email = request.POST.get('email')
@@ -177,7 +179,7 @@ class Login(View):
             error_message = 'Email or Password invalid !!'
 
         print(email, password)
-        return render(request, 'login.html', {'error': error_message})
+        return render(request, 'landingPage/login.html', {'error': error_message})
 
 def logout(request):
     request.session.clear()
@@ -236,7 +238,7 @@ def store(request):
     data['categories'] = categories
 
     print('you are : ', request.session.get('email'))
-    return render(request, 'index.html', data)
+    return render(request, 'landinPage/index.html', data)
 
 
 

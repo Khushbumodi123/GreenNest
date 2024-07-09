@@ -1,0 +1,62 @@
+{% extends 'landingPage/base.html' %}
+{% load cart %}
+{% load custom_filter %}
+
+{% block content %}
+<!-- Orders Page Start -->
+<div class="container-fluid py-5">
+    <div class="container py-5">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Sno.</th>
+                        <th scope="col">Image</th>
+                        <th scope="col">Product</th>
+                        <th scope="col">Date</th>
+                        <th scope="col">Price</th>
+                        <th scope="col">Quantity</th>
+                        <th scope="col">Total</th>
+                        <th scope="col">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <img src="{{ order.product.image.url }}" class="img-fluid me-5 rounded-circle" style="width: 80px; height: 80px;" alt="{{ order.product.name }}">
+                            </div>
+                        </td>
+                        <td>
+                            <p class="mb-0 mt-4">{{ order.product.name }}</p>
+                        </td>
+                        <td>
+                            <p class="mb-0 mt-4">{{ order.date }}</p>
+                        </td>
+                        <td>
+                            <p class="mb-0 mt-4">{{ order.price|currency }}</p>
+                        </td>
+                        <td>
+                            <p class="mb-0 mt-4">{{ order.quantity }}</p>
+                        </td>
+                        <td>
+                            <p class="mb-0 mt-4">{{ order.quantity|multiply:order.price|currency }}</p>
+                        </td>
+                        <td>
+                            {% if order.status %}
+                            <span class="badge bg-success mt-4">Completed</span>
+                            {% else %}
+                            <span class="badge bg-warning mt-4">Pending</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<!-- Orders Page End -->
+{% endblock %}
