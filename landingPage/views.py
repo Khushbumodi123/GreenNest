@@ -16,6 +16,7 @@ def category_products(request, category_id):
     search_query = request.GET.get('search')
     min_price = request.GET.get('min_price')
     max_price = request.GET.get('max_price')
+    rating_query = request.GET.get('rating')
 
     if search_query:
         products = products.filter(name__icontains=search_query) | products.filter(description__contains=search_query)
@@ -23,6 +24,8 @@ def category_products(request, category_id):
         products = products.filter(price__gte=min_price)
     if max_price:
         products = products.filter(price__lte=max_price)
+    if rating_query:
+        products = products.filter(rating__gte=rating_query)
 
     context = {
         'categories': categories,
@@ -39,6 +42,7 @@ def shop(request):
     search_query = request.GET.get('search')
     min_price = request.GET.get('min_price')
     max_price = request.GET.get('max_price')
+    rating_query = request.GET.get('rating')
 
     if search_query:
         products = products.filter(name__icontains=search_query) | products.filter(description__contains=search_query)
@@ -46,6 +50,8 @@ def shop(request):
         products = products.filter(price__gte=min_price)
     if max_price:
         products = products.filter(price__lte=max_price)
+    if rating_query:
+        products = products.filter(rating__gte=rating_query)
 
     context = {
         'categories': categories,

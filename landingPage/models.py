@@ -1,9 +1,14 @@
 from django.db import models
 import datetime
 from django.utils import timezone
+from django.core.exceptions import ValidationError
 
 def one_year_from_today():
     return timezone.now() + datetime.timedelta(days=365)
+
+def validate_rating(value):
+    if value < 0 or value > 5:
+        raise ValidationError(f'Rating must be between 0 and 5. You entered {value}.')
 
 # --------------Category Module -------------------
 class Category(models.Model):
@@ -30,7 +35,7 @@ class Product(models.Model):
     last_updated = models.DateTimeField(auto_now=True)
     discount_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     expiration_date = models.DateField(default=one_year_from_today)
-    rating = models.IntegerField(default=3)
+    rating = models.PositiveIntegerField(validators=[validate_rating], null=True, blank=True)
 
     def __str__(self) -> str:
         return self.name

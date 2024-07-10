@@ -20,6 +20,7 @@
                             <input type="text" name="search" class="form-control me-2" placeholder="Search Products" value="{{ request.GET.search }}">
                             <input type="number" name="min_price" class="form-control me-2" placeholder="Min Price" value="{{ request.GET.min_price }}">
                             <input type="number" name="max_price" class="form-control me-2" placeholder="Max Price" value="{{ request.GET.max_price }}">
+                            <input type="number" name="rating_query" class="form-control me-2" placeholder="Ratings" value="{{ request.GET.rating }}">
                             <button type="submit" class="btn btn-primary">Filter</button>
                         </form>
                         <ul class="nav nav-pills d-inline-flex text-center mb-5">
