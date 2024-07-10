@@ -6,14 +6,8 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth.hashers import  check_password
 
 def index(request):
-    categories = Category.objects.all()
     products = Product.objects.all()
-    context = {
-        'categories': categories,
-        'products': products,
-    }
-    print(products[0].image.url)
-    return render(request, 'landingPage/index.html', context)
+    return render(request, 'landingPage/index.html', {'products' : products})
 
 def category_products(request, category_id):
     category = get_object_or_404(Category, pk=category_id)
@@ -22,11 +16,17 @@ def category_products(request, category_id):
         'categories': Category.objects.all(),
         'products': products,
     }
-    return render(request, 'landingPage/index.html', context)
+    return render(request, 'landingPage/shop.html', context)
 
 def shop(request):
-    """View function for rendering the shop page."""
-    return render(request, 'shop.html')
+    categories = Category.objects.all()
+    products = Product.objects.all()
+    context = {
+        'categories': categories,
+        'products': products,
+    }
+    print(products[0].image.url)
+    return render(request, 'landingPage/shop.html', context)
 
 def shop_detail(request):
     """View function for rendering the shop detail page."""
