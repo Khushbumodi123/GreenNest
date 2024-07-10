@@ -1,4 +1,4 @@
-{% extends 'landingPage/base.html' %}
+{% extends 'landingPage/authbase.html' %}
 
 {% block content %}
 <!-- Signup Page Start -->
@@ -48,6 +48,9 @@
                         <input class="btn btn-info btn-sm" type="submit" value="Create An Account">
                     </div>
                 </form>
+                <div class="text-center mt-3">
+                    <p> Already have an account? <a href="{% url 'landingPage:login' %}">Login here</a></p>
+                </div>
             </div>
         </div>
     </div>
