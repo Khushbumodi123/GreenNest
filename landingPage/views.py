@@ -13,9 +13,12 @@ def category_products(request, category_id):
     categories = Category.objects.all()
     products = Product.objects.filter(category_id=category_id)
 
+    search_query = request.GET.get('search')
     min_price = request.GET.get('min_price')
     max_price = request.GET.get('max_price')
 
+    if search_query:
+        products = products.filter(name__icontains=search_query) | products.filter(description__contains=search_query)
     if min_price:
         products = products.filter(price__gte=min_price)
     if max_price:
@@ -33,9 +36,12 @@ def shop(request):
     categories = Category.objects.all()
     products = Product.objects.all()
 
+    search_query = request.GET.get('search')
     min_price = request.GET.get('min_price')
     max_price = request.GET.get('max_price')
 
+    if search_query:
+        products = products.filter(name__icontains=search_query) | products.filter(description__contains=search_query)
     if min_price:
         products = products.filter(price__gte=min_price)
     if max_price:
