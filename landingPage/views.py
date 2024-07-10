@@ -10,26 +10,47 @@ def index(request):
     return render(request, 'landingPage/index.html', {'products' : products})
 
 def category_products(request, category_id):
-    category = get_object_or_404(Category, pk=category_id)
-    products = Product.objects.filter(category=category)
+    categories = Category.objects.all()
+    products = Product.objects.filter(category_id=category_id)
+
+    min_price = request.GET.get('min_price')
+    max_price = request.GET.get('max_price')
+
+    if min_price:
+        products = products.filter(price__gte=min_price)
+    if max_price:
+        products = products.filter(price__lte=max_price)
+
     context = {
-        'categories': Category.objects.all(),
+        'categories': categories,
         'products': products,
+        'category_id': category_id
     }
+
     return render(request, 'landingPage/shop.html', context)
 
 def shop(request):
     categories = Category.objects.all()
     products = Product.objects.all()
+
+    min_price = request.GET.get('min_price')
+    max_price = request.GET.get('max_price')
+
+    if min_price:
+        products = products.filter(price__gte=min_price)
+    if max_price:
+        products = products.filter(price__lte=max_price)
+
     context = {
         'categories': categories,
         'products': products,
+        'category_id': None
     }
-    print(products[0].image.url)
+
     return render(request, 'landingPage/shop.html', context)
 
 def shop_detail(request):
-    """View function for rendering the shop detail page."""
+
     return render(request, 'landingPage/product.html')
 
 def cart(request):
