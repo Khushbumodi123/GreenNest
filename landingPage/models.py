@@ -1,5 +1,9 @@
 from django.db import models
 import datetime
+from django.utils import timezone
+
+def one_year_from_today():
+    return timezone.now() + datetime.timedelta(days=365)
 
 # --------------Category Module -------------------
 class Category(models.Model):
@@ -15,12 +19,18 @@ class Category(models.Model):
     
 # --------------Product Module -------------------
 class Product(models.Model):
-    name = models.CharField(max_length=50)
-    price = models.IntegerField(default=0)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, default=1)
-    description = models.CharField(
-        max_length=200, default='', null=True, blank=True)
-    image = models.ImageField(upload_to='products/')
+    name = models.CharField(max_length=255)
+    description = models.TextField(default='')
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='products', default=1)
+    stock = models.PositiveIntegerField(default=100)
+    image = models.ImageField(upload_to='products/images/')
+    brand = models.CharField(max_length=255, default='')
+    date_added = models.DateTimeField(default=timezone.now)
+    last_updated = models.DateTimeField(auto_now=True)
+    discount_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    expiration_date = models.DateField(default=one_year_from_today)
+    rating = models.IntegerField(default=3)
 
     def __str__(self) -> str:
         return self.name
