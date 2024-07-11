@@ -38,7 +38,6 @@ def category_products(request, category_id):
 def shop(request):
     categories = Category.objects.all()
     products = Product.objects.all()
-
     search_query = request.GET.get('search')
     min_price = request.GET.get('min_price')
     max_price = request.GET.get('max_price')
@@ -52,7 +51,6 @@ def shop(request):
         products = products.filter(price__lte=max_price)
     if rating_query:
         products = products.filter(rating__gte=rating_query)
-
     context = {
         'categories': categories,
         'products': products,
@@ -61,8 +59,8 @@ def shop(request):
 
     return render(request, 'landingPage/shop.html', context)
 
-def shop_detail(request):
-
+def product_detail(request, product_id):
+    product = get_object_or_404(Product, pk=product_id)
     return render(request, 'landingPage/product.html')
 
 def cart(request):
