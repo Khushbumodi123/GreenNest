@@ -15,6 +15,7 @@ from pathlib import Path
 from django.contrib import staticfiles
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
@@ -60,11 +61,11 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'GreenNest.urls'
 
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates']
-        ,
+        'DIRS': [os.path.join(BASE_DIR, 'templates'), os.path.join(BASE_DIR, 'profile_page/templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
