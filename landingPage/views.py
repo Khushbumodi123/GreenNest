@@ -4,6 +4,8 @@ from django.http import HttpResponseRedirect
 from .models import Category, Product, Customer, Order
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.hashers import  check_password
+from .forms import CustomLoginForm
+from django.contrib.auth import authenticate, login
 
 def index(request):
     products = Product.objects.all()
@@ -61,7 +63,9 @@ def shop(request):
 
 def product_detail(request, product_id):
     product = get_object_or_404(Product, pk=product_id)
-    return render(request, 'landingPage/product.html')
+    categories = Category.objects.all()
+    return render(request, 'landingPage/product.html', {'product': product, 'categories': categories})
+
 
 def cart(request):
     ids = list(request.session.get('cart').keys())
@@ -185,38 +189,41 @@ class Signup(View):
 
 class Login(View):
     return_url = None
-    def get(self , request):
+
+    def get(self, request):
         Login.return_url = request.GET.get('return_url')
-        return render(request , 'landingPage/login.html')
+        form = CustomLoginForm()
+        return render(request, 'landingPage/login.html', {'form': form})
 
-    def post(self , request):
-        email = request.POST.get('email')
-        password = request.POST.get('password')
-        customer = Customer.get_customer_by_email(email)
-        error_message = None
-        if customer:
-            flag = check_password(password, customer.password)
-            if flag:
-                request.session['customer'] = customer.id
-
+    def post(self, request):
+        form = CustomLoginForm(request, data=request.POST)
+        print(form)
+        print("nksns")
+        if form.is_valid():
+            print("shdsbdh")
+            email = form.cleaned_data.get('username')  # 'username' in form maps to 'email'
+            print("sjd")
+            password = form.cleaned_data.get('password')
+            print(email, password)
+            print("hello")
+            user = authenticate(request, username=email, password=password)
+            if user is not None:
+                login(request, user)
                 if Login.return_url:
-                    return HttpResponseRedirect(Login.return_url)
+                    return redirect(Login.return_url)
                 else:
                     Login.return_url = None
                     return redirect('landingPage:index')
             else:
                 error_message = 'Email or Password invalid !!'
         else:
-            error_message = 'Email or Password invalid !!'
-
-        print(email, password)
-        return render(request, 'landingPage/login.html', {'error': error_message})
+            error_message = 'Please enter a correct username and password. Note that both fields may be case-sensitive.'
+        
+        return render(request, 'landingPage/login.html', {'form': form, 'error': error_message})  
 
 def logout(request):
     request.session.clear()
     return redirect('landingPage:login')
-
-
 
 # Create your views here.
 class Index(View):
@@ -270,6 +277,27 @@ def store(request):
 
     print('you are : ', request.session.get('email'))
     return render(request, 'landinPage/index.html', data)
+
+
+def add_to_cart(request, product_id):
+    cart = request.session.get('cart', {})
+    if product_id in cart:
+        cart[product_id] += 1
+    else:
+        cart[product_id] = 1
+    request.session['cart'] = cart
+    return redirect('landingPage:product_detail', product_id=product_id)
+
+def remove_from_cart(request, product_id):
+    cart = request.session.get('cart', {})
+    if product_id in cart:
+        if cart[product_id] > 1:
+            cart[product_id] -= 1
+        else:
+            del cart[product_id]
+    request.session['cart'] = cart
+    return redirect('landingPage:product_detail', product_id=product_id)
+
 
 
 

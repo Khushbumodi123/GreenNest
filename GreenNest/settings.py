@@ -81,6 +81,8 @@ WSGI_APPLICATION = 'GreenNest.wsgi.application'
 
 APPEND_SLASH = False
 
+LOGIN_URL = 'landingPage/login/'
+
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
