@@ -9,25 +9,25 @@
                 <div class="text-center mb-4">
                     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Shopping_cart_with_food_clip_art_2.svg/307px-Shopping_cart_with_food_clip_art_2.svg.png" alt="" class="img-fluid" style="height: 150px;">
                 </div>
-                <h2 class="text-center">Create An Account</h2>
+                <h2 class="text-center">Login</h2>
                 <hr>
-                <form action="/login/" method="POST">
+                <form method="POST"> <!-- Removed action attribute -->
                     {% csrf_token %}
+                    <div class="form-group mb-3">
+{#                        <label for="email" class="float-left">Email</label>#}
+                        <input required type="email" name="email" id="email" value="{{ form.email.value|default_if_none:'' }}" class="form-control form-control-sm" placeholder="Email">
+                        {{ form.email.errors }}
+                    </div>
+                    <div class="form-group mb-3">
+{#                        <label for="password" class="float-left">Password</label>#}
+                        <input type="password" name="password" id="password" class="form-control form-control-sm" placeholder="Password">
+                        {{ form.password.errors }}
+                    </div>
                     {% if error %}
                     <div class="alert alert-danger" role="alert">
                         {{ error }}
                     </div>
                     {% endif %}
-                    <!-- Email -->
-                    <div class="form-group mb-3">
-                        <label for="email">Email</label>
-                        <input required type="email" name="email" id="email" value="{{ values.email }}" class="form-control form-control-sm" placeholder="example@gmail.com">
-                    </div>
-                    <!-- Password -->
-                    <div class="form-group mb-3">
-                        <label for="password">Password</label>
-                        <input type="password" name="password" id="password" class="form-control form-control-sm" placeholder="********">
-                    </div>
                     <hr>
                     <div class="text-center">
                         <input class="btn btn-info btn-sm col-lg-4" type="submit" value="Login">

@@ -2,8 +2,6 @@
 from django.urls import path
 from . import views
 from .middlewares.auth import  auth_middleware
-from .views import Signup
-from .views import Login , logout
 
 app_name = 'landingPage'
 
@@ -20,8 +18,8 @@ urlpatterns = [
     path('cart/', auth_middleware(views.cart) , name='cart'),
     path('checkout/', views.checkout , name='checkout'),
     path('orders/', auth_middleware(views.order), name='orders'),
+    path('signup/', views.signup, name='signup'),
+    path('login/', views.login_view, name='login'),
+    path('logout/', views.logout_view, name='logout'),
     #path('order/<int:order_id>/', auth_middleware(views.order_detail), name='order_detail'),
-    path('signup/', Signup.as_view(), name='signup'),
-    path('login/', Login.as_view(), name='login'),
-    path('logout/', views.logout , name='logout'),
 ]
