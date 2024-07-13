@@ -57,7 +57,14 @@ class Customer(AbstractBaseUser):
 
 # --------------Category Module -------------------
 class Category(models.Model):
-    name = models.CharField(max_length=100)
+    CATEGORY_CHOICES = [
+        ('Kitchen', 'Kitchen'),
+        ('Bathroom', 'Bathroom'),
+        ('Cleaning', 'Cleaning'),
+        ('Decor', 'Decor'),
+    ]
+    
+    name = models.CharField(max_length=100, choices=CATEGORY_CHOICES)
 
     @staticmethod
     def get_all_categories():
@@ -65,6 +72,7 @@ class Category(models.Model):
     
     def __str__(self):
         return self.name
+
 
 # --------------Product Module -------------------
 class Product(models.Model):
