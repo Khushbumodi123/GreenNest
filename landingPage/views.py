@@ -132,33 +132,63 @@ def product_detail(request, product_id):
     return render(request, 'landingPage/product.html')
 
 def cart(request):
-    ids = list(request.session.get('cart').keys())
-    products = Product.get_products_by_id(ids)
-    print(products)
-    return render(request , 'cart.html' , {'products' : products} )
-    
+    if not request.session.get('cart'):
+        request.session['cart'] = {}
+    cart = request.session.get('cart')
+    product_ids = list(cart.keys())
+    products = Product.get_products_by_id(product_ids)
+    context = {
+        'products': products,
+        'cart': cart
+    }
+    return render(request, 'landingPage/cart.html', context)
+
+def add_to_cart(request, product_id):
+    cart = request.session.get('cart', {})
+    quantity = cart.get(str(product_id), 0)
+    cart[str(product_id)] = quantity + 1
+    request.session['cart'] = cart
+    return redirect('landingPage:cart')
+
+def remove_from_cart(request, product_id):
+    cart = request.session.get('cart', {})
+    if str(product_id) in cart:
+        del cart[str(product_id)]
+    request.session['cart'] = cart
+    return redirect('landingPage:cart')
+
+def update_cart_quantity(request, product_id, action):
+    cart = request.session.get('cart', {})
+    if str(product_id) in cart:
+        if action == 'increment':
+            cart[str(product_id)] += 1
+        elif action == 'decrement':
+            cart[str(product_id)] -= 1
+            if cart[str(product_id)] == 0:
+                del cart[str(product_id)]
+    request.session['cart'] = cart
+    return redirect('landingPage:cart')
 
 def checkout(request):
-    address = request.POST.get('address')
-    phone = request.POST.get('phone')
-    customer = request.session.get('customer')
-    cart = request.session.get('cart')
-    products = Product.get_products_by_id(list(cart.keys()))
-    print(address, phone, customer, cart, products)
-
-    for product in products:
-        print(cart.get(str(product.id)))
-        order = Order(customer=Customer(id=customer),
-                          product=product,
-                          price=product.price,
-                          address=address,
-                          phone=phone,
-                          quantity=cart.get(str(product.id)))
-        order.save()
-    request.session['cart'] = {}
-
-    return redirect('cart')
-
+    if request.method == 'POST':
+        address = request.POST.get('address')
+        phone = request.POST.get('phone')
+        customer_id = request.session.get('customer')
+        cart = request.session.get('cart')
+        products = Product.get_products_by_id(list(cart.keys()))
+        for product in products:
+            order = Order(
+                customer=Customer(id=customer_id),
+                product=product,
+                price=product.price,
+                address=address,
+                phone=phone,
+                quantity=cart.get(str(product.id))
+            )
+            order.save()
+        request.session['cart'] = {}
+        return redirect('landingPage:cart')
+    return redirect('landingPage:cart')
 
 def testimonial(request):
     """View function for rendering the testimonial page."""
