@@ -5,7 +5,7 @@ from .models import Category, Product, Customer, Order
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.hashers import  check_password
 from django.contrib.auth import authenticate, login, logout
-from .forms import SignupForm, LoginForm
+from .forms import SignupForm, LoginForm, PasswordResetForm, SetPasswordForm
 
 def index(request):
     products = Product.objects.all()
@@ -41,6 +41,41 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     return redirect('landingPage:login')
+
+def password_reset_request(request):
+    if request.method == "POST":
+        form = PasswordResetForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            user = Customer.objects.filter(email=email).first()
+            if user:
+                request.session['reset_email'] = email
+                return redirect('landingPage:password_reset_confirm')
+            else:
+                return render(request, 'landingPage/password_reset.html', {'form': form, 'error': 'Email not found.'})
+    else:
+        form = PasswordResetForm()
+    return render(request, 'landingPage/password_reset.html', {'form': form})
+
+def password_reset_confirm(request):
+    email = request.session.get('reset_email')
+    if not email:
+        return redirect('landingPage:password_reset')
+
+    user = Customer.objects.filter(email=email).first()
+    if not user:
+        return redirect('landingPage:password_reset')
+
+    if request.method == "POST":
+        form = SetPasswordForm(request.POST)
+        if form.is_valid():
+            new_password = form.cleaned_data['new_password1']
+            user.set_password(new_password)
+            user.save()
+            return redirect('landingPage:login')
+    else:
+        form = SetPasswordForm()
+    return render(request, 'landingPage/password_reset_confirm.html', {'form': form})
 
 def category_products(request, category_id):
     categories = Category.objects.all()
