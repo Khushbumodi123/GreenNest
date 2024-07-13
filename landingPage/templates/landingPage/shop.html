@@ -6,6 +6,15 @@
 <div class="container-fluid py-5">
     <div class="container">
         <div class="row">
+            <!-- Category Buttons -->
+            <div class="col-lg-12 mb-3">
+                <div class="d-flex justify-content-start flex-wrap">
+                    <a href="{% url 'landingPage:shop' %}" class="btn btn-outline-primary me-2 mb-2">All Products</a> <!-- All Products Option -->
+                    {% for category in categories %}
+                    <a href="{% url 'landingPage:category_products' category.id %}" class="btn btn-outline-primary me-2 mb-2">{{ category.name }}</a>
+                    {% endfor %}
+                </div>
+            </div>
             <!-- Sidebar Filters -->
             <div class="col-lg-3">
                 <h4>Filters</h4>
