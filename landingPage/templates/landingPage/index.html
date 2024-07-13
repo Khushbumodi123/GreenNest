@@ -1,5 +1,7 @@
 {% extends 'landingPage/base.html' %}
 {% load static %}
+{% load cart %}
+{% load custom_filter %}
 {% block content %}
 
     <!-- Hero Start -->
@@ -41,8 +43,8 @@
     </div>
     <!-- Hero End -->
 
-    <!-- Fruits Shop Start-->
-    <div class="container-fluid fruite py-5">
+    <!-- Products Start-->
+    <div class="container-fluid py-5">
         <div class="container py-5">
             <div class="tab-class text-center">
                 <div class="row g-4">
@@ -76,14 +78,23 @@
                                     <p>{{ product.description }}</p>
                                     <div class="d-flex justify-content-between flex-lg-wrap">
                                         <p class="text-dark fs-5 fw-bold mb-0">${{ product.price|floatformat:"2" }}</p>
-                                        {% if product in request.session.cart %}
-                                            <form action="" class="col-2" method="post">
-                                                {% csrf_token %}
-                                                <input type="hidden" name="product_id" value="{{ product.id }}">
-                                                <button type="submit" class="btn btn-danger btn-sm">Remove</button>
-                                            </form>
+                                        {% if product|is_in_cart:request.session.cart %}
+                                            <div class="row no-gutters">
+                                                <form action="" class="col-2" method="post">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="product_id" value="{{ product.id }}">
+                                                    <input type="hidden" name="remove" value="True">
+                                                    <button type="submit" class="btn btn-danger btn-sm">-</button>
+                                                </form>
+                                                <div class="text-center col">{{ product|cart_quantity:request.session.cart }} in Cart</div>
+                                                <form action="" class="col-2" method="post">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="product_id" value="{{ product.id }}">
+                                                    <button type="submit" class="btn btn-primary btn-sm">+</button>
+                                                </form>
+                                            </div>
                                         {% else %}
-                                            <form action="" class="col-2" method="post">
+                                            <form action="" method="post">
                                                 {% csrf_token %}
                                                 <input type="hidden" name="product_id" value="{{ product.id }}">
                                                 <button type="submit" class="btn btn-primary btn-sm">Add to Cart</button>
@@ -99,7 +110,6 @@
             </div>
         </div>
     </div>
-    <!-- Fruits Shop End -->
+    <!-- Products End -->
 
-    
 {% endblock %}
