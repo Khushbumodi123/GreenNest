@@ -1,77 +1,80 @@
 {% extends 'landingPage/base.html' %}
 {% load static %}
 {% block content %}
-
-    <!-- Banner Start -->
-    <div class="container-fluid banner py-5">
-    </div>
-    <!-- Banner End -->
-
-    <!-- Fruits Shop Start-->
-    <div class="container-fluid fruite py-5">
-        <div class="container py-5">
-            <div class="tab-class text-center">
-                <div class="row g-4">
-                    <div class="col-lg-4 text-start">
-                        <h1>Our Sustainable Products</h1>
-                    </div>
-                    <div class="col-lg-8 text-end">
-                        <form method="get" action="{% url 'landingPage:shop' %}" class="d-inline-flex">
-                            <input type="text" name="search" class="form-control me-2" placeholder="Search Products" value="{{ request.GET.search }}">
-                            <input type="number" name="min_price" class="form-control me-2" placeholder="Min Price" value="{{ request.GET.min_price }}">
-                            <input type="number" name="max_price" class="form-control me-2" placeholder="Max Price" value="{{ request.GET.max_price }}">
-                            <input type="number" name="rating_query" class="form-control me-2" placeholder="Ratings" value="{{ request.GET.rating }}">
-                            <button type="submit" class="btn btn-primary">Filter</button>
-                        </form>
-                        <ul class="nav nav-pills d-inline-flex text-center mb-5">
-                            <li class="nav-item">
-                                <a class="nav-link {% if not category_id %}active{% endif %}" href="{% url 'landingPage:shop' %}">All Products</a>
-                            </li>
-                            {% for category in categories %}
-                            <li class="nav-item">
-                                <a class="nav-link {% if category_id == category.id %}active{% endif %}" href="{% url 'landingPage:category_products' category.id %}">{{ category.name }}</a>
-                            </li>
-                            {% endfor %}
-                        </ul>
-                    </div>
+<div class="container-fluid py-5 mb-5 hero-header">
+</div>
+<div class="container-fluid py-5">
+    <div class="container">
+        <div class="row">
+            <!-- Category Buttons -->
+            <div class="col-lg-12 mb-3">
+                <div class="d-flex justify-content-start flex-wrap">
+                    <a href="{% url 'landingPage:shop' %}" class="btn btn-outline-primary me-2 mb-2">All Products</a> <!-- All Products Option -->
+                    {% for category in categories %}
+                    <a href="{% url 'landingPage:category_products' category.id %}" class="btn btn-outline-primary me-2 mb-2">{{ category.name }}</a>
+                    {% endfor %}
                 </div>
-                <div class="tab-content">
-                    <div class="row g-4">
-                        {% for product in products %}
-                        <div class="col-md-6 col-lg-4 col-xl-3">
-                            <div class="rounded position-relative fruite-item">
-                                <div class="fruite-img">
-                                    <img src="{{ product.image.url }}" class="img-fluid w-100 rounded-top" alt="{{ product.name }}">
-                                </div>
-                                <div class="text-white bg-secondary px-3 py-1 rounded position-absolute" style="top: 10px; left: 10px;">{{ product.category.name }}</div>
-                                <div class="p-4 border border-secondary border-top-0 rounded-bottom">
-                                    <h4>{{ product.name }}</h4>
-                                    <p>{{ product.description }}</p>
-                                    <div class="d-flex justify-content-between flex-lg-wrap">
-                                        <p class="text-dark fs-5 fw-bold mb-0">${{ product.price|floatformat:"2" }}</p>
-                                        {% if product in request.session.cart %}
-                                            <form action="" class="col-2" method="post">
-                                                {% csrf_token %}
-                                                <input type="hidden" name="product_id" value="{{ product.id }}">
-                                                <button type="submit" class="btn btn-danger btn-sm">Remove</button>
-                                            </form>
-                                        {% else %}
-                                            <form action="" class="col-2" method="post">
-                                                {% csrf_token %}
-                                                <input type="hidden" name="product_id" value="{{ product.id }}">
-                                                <button type="submit" class="btn btn-primary btn-sm">Add to Cart</button>
-                                            </form>
-                                        {% endif %}
-                                    </div>
+            </div>
+            <!-- Sidebar Filters -->
+            <div class="col-lg-3">
+                <h4>Filters</h4>
+                <form method="GET" action="{% url 'landingPage:shop' %}">
+                    <div class="mb-3">
+                        <label for="search">Search:</label>
+                        <input type="text" id="search" name="search" class="form-control" placeholder="Search products">
+                    </div>
+                    <div class="mb-3">
+                        <label for="min_price">Minimum Price:</label>
+                        <input type="number" id="min_price" name="min_price" class="form-control" placeholder="Min Price">
+                    </div>
+                    <div class="mb-3">
+                        <label for="max_price">Maximum Price:</label>
+                        <input type="number" id="max_price" name="max_price" class="form-control" placeholder="Max Price">
+                    </div>
+                    <div class="mb-3">
+                        <label for="rating">Minimum Rating:</label>
+                        <select id="rating" name="rating" class="form-control">
+                            <option value="">-- Select Rating --</option>
+                            <option value="1">1 Star</option>
+                            <option value="2">2 Stars</option>
+                            <option value="3">3 Stars</option>
+                            <option value="4">4 Stars</option>
+                            <option value="5">5 Stars</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Apply Filters</button>
+                </form>
+            </div>
+            <!-- Product Display -->
+            <div class="col-lg-9">
+                <div class="row">
+                    {% for product in products %}
+                    <div class="col-lg-4 col-md-6 col-sm-6 pb-1">
+                        <div class="card product-item border-0 mb-4">
+                            <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
+                                <img class="img-fluid w-100" src="{{ product.image.url }}" alt="{{ product.name }}">
+                            </div>
+                            <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
+                                <h6 class="text-truncate mb-3">{{ product.name }}</h6>
+                                <p>{{ product.description }}</p> <!-- Product Description -->
+                                <div class="d-flex justify-content-center">
+                                    <h6>${{ product.price }}</h6>
                                 </div>
                             </div>
+                            <div class="card-footer d-flex justify-content-between bg-light border">
+                                <a href="{% url 'landingPage:product_detail' product.id %}" class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>View Detail</a>
+                                <form action="{% url 'landingPage:add_to_cart' product.id %}" method="post" class="me-2">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm text-dark p-0"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</button>
+                                </form>
+                            </div>
                         </div>
-                        {% endfor %}
                     </div>
+                    {% endfor %}
                 </div>
             </div>
         </div>
     </div>
-    <!-- Fruits Shop End -->
-
+</div>
+<!-- Shop End -->
 {% endblock %}
