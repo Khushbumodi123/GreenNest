@@ -44,9 +44,10 @@ INSTALLED_APPS = [
     'landingPage',
 ]
 
+AUTH_USER_MODEL = 'landingPage.Customer'
+
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
-#AUTH_USER_MODEL = 'authapp.CustomUser'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

@@ -1,21 +1,34 @@
 from django import forms
-from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.forms import UserCreationForm
+from .models import Customer
 
-class CustomLoginForm(AuthenticationForm):
-    username = forms.EmailField(widget=forms.EmailInput(attrs={
-        'class': 'form-control form-control-sm',
-        'placeholder': 'example@gmail.com',
-        'id': 'email'
-    }))
-    password = forms.CharField(widget=forms.PasswordInput(attrs={
-        'class': 'form-control form-control-sm',
-        'placeholder': '********',
-        'id': 'password'
-    }))
+class SignupForm(UserCreationForm):
+    first_name = forms.CharField(max_length=50)
+    last_name = forms.CharField(max_length=50)
+    phone = forms.CharField(max_length=15)
 
-class SearchForm(forms.Form):
-    query = forms.CharField(max_length=100, required=True, widget=forms.TextInput(attrs={
-        'class': 'form-control me-2',
-        'placeholder': 'Search',
-        'aria-label': 'Search'
-    }))
+    class Meta:
+        model = Customer
+        fields = ('first_name', 'last_name', 'phone', 'email', 'password1', 'password2')
+
+class LoginForm(forms.Form):
+    email = forms.EmailField()
+    password = forms.CharField(widget=forms.PasswordInput)
+
+class PasswordResetForm(forms.Form):
+    email = forms.EmailField(label="Email", max_length=254)
+
+class SetPasswordForm(forms.Form):
+    new_password1 = forms.CharField(label="New password", widget=forms.PasswordInput)
+    new_password2 = forms.CharField(label="Confirm new password", widget=forms.PasswordInput)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password1 = cleaned_data.get("new_password1")
+        password2 = cleaned_data.get("new_password2")
+
+        if password1 and password2 and password1 != password2:
+            raise forms.ValidationError("The two password fields didn’t match.")
+        return cleaned_data
+
+

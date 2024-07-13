@@ -2,7 +2,7 @@
 *.log
 *.pot
 *.pyc
-__pycache__
+_pycache_
 db.sqlite3
 media
 
@@ -48,7 +48,6 @@ atlassian-ide-plugin.xml
 # Python # 
 *.py[cod] 
 *$py.class 
-*.pyc
 
 # Distribution / packaging 
 .Python build/ 
