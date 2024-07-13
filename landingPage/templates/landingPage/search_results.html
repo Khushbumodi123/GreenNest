@@ -1,0 +1,30 @@
+<!-- search_results.html -->
+
+{% extends 'landingPage/base.html' %}
+
+{% block content %}
+<div class="container-fluid py-5 mb-5 hero-header">
+</div>
+<div class="container mt-5">
+    <h1>Search Results for "{{ query }}"</h1>
+    <div class="row">
+        {% for product in products %}
+        <div class="col-md-4">
+            <div class="card mb-4 shadow-sm">
+                <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ product.name }}</h5>
+                    <p class="card-text">{{ product.description }}</p>
+                    <p class="card-text"><strong>${{ product.price }}</strong></p>
+                    <a href="{% url 'landingPage:product_detail' product.id %}" class="btn btn-primary">View Details</a>
+                    <form action="" method="post" class="me-2">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm text-dark p-0"><i class="fas fa-shopping-cart text-primary mr-1"></i>   Add To Cart</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -103,6 +103,11 @@ def category_products(request, category_id):
 
     return render(request, 'landingPage/shop.html', context)
 
+def search(request):
+    query = request.GET.get('q')
+    products = Product.objects.filter(name__icontains=query)
+    return render(request, 'landingPage/search_results.html', {'products': products, 'query': query})
+
 def shop(request):
     categories = Category.objects.all()
     products = Product.objects.all()
@@ -129,13 +134,15 @@ def shop(request):
 
 def product_detail(request, product_id):
     product = get_object_or_404(Product, pk=product_id)
-    return render(request, 'landingPage/product.html')
+    categories = Category.objects.all()
+    return render(request, 'landingPage/product.html', {'product': product, 'categories': categories})
+
 
 def cart(request):
     ids = list(request.session.get('cart').keys())
     products = Product.get_products_by_id(ids)
     print(products)
-    return render(request , 'cart.html' , {'products' : products} )
+    return render(request , 'landingPage/cart.html' , {'products' : products} )
     
 
 def checkout(request):
@@ -157,7 +164,7 @@ def checkout(request):
         order.save()
     request.session['cart'] = {}
 
-    return redirect('cart')
+    return redirect('landingPage/cart')
 
 
 def testimonial(request):
@@ -237,6 +244,27 @@ def store(request):
 
     print('you are : ', request.session.get('email'))
     return render(request, 'landinPage/index.html', data)
+
+
+def add_to_cart(request, product_id):
+    cart = request.session.get('cart', {})
+    if product_id in cart:
+        cart[product_id] += 1
+    else:
+        cart[product_id] = 1
+    request.session['cart'] = cart
+    return redirect('landingPage:product_detail', product_id=product_id)
+
+def remove_from_cart(request, product_id):
+    cart = request.session.get('cart', {})
+    if product_id in cart:
+        if cart[product_id] > 1:
+            cart[product_id] -= 1
+        else:
+            del cart[product_id]
+    request.session['cart'] = cart
+    return redirect('landingPage:product_detail', product_id=product_id)
+
 
 
 
