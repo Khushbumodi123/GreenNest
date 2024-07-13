@@ -169,13 +169,28 @@ def update_cart_quantity(request, product_id, action):
     request.session['cart'] = cart
     return redirect('landingPage:cart')
 
+
 def checkout(request):
     if request.method == 'POST':
-        address = request.POST.get('address')
-        phone = request.POST.get('phone')
         customer_id = request.session.get('customer')
+        if not customer_id:
+            return redirect('landingPage:login')
+
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+        address = request.POST.get('address')
+        city = request.POST.get('city')
+        country = request.POST.get('country')
+        postcode = request.POST.get('postcode')
+        phone = request.POST.get('phone')
+        email = request.POST.get('email')
+        order_notes = request.POST.get('order_notes')
+        shipping = request.POST.get('shipping')
+        payment_method = request.POST.get('payment_method')
+
         cart = request.session.get('cart')
         products = Product.get_products_by_id(list(cart.keys()))
+
         for product in products:
             order = Order(
                 customer=Customer(id=customer_id),
@@ -186,9 +201,18 @@ def checkout(request):
                 quantity=cart.get(str(product.id))
             )
             order.save()
+
         request.session['cart'] = {}
         return redirect('landingPage:cart')
-    return redirect('landingPage:cart')
+    else:
+        cart = request.session.get('cart', {})
+        product_ids = list(cart.keys())
+        products = Product.get_products_by_id(product_ids)
+        context = {
+            'products': products,
+            'cart': cart
+        }
+        return render(request, 'landingPage/checkout.html', context)
 
 def testimonial(request):
     """View function for rendering the testimonial page."""
