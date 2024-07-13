@@ -37,6 +37,11 @@ def category_products(request, category_id):
 
     return render(request, 'landingPage/shop.html', context)
 
+def search(request):
+    query = request.GET.get('q')
+    products = Product.objects.filter(name__icontains=query)
+    return render(request, 'landingPage/search_results.html', {'products': products, 'query': query})
+
 def shop(request):
     categories = Category.objects.all()
     products = Product.objects.all()
@@ -71,7 +76,7 @@ def cart(request):
     ids = list(request.session.get('cart').keys())
     products = Product.get_products_by_id(ids)
     print(products)
-    return render(request , 'cart.html' , {'products' : products} )
+    return render(request , 'landingPage/cart.html' , {'products' : products} )
     
 
 def checkout(request):
@@ -93,7 +98,7 @@ def checkout(request):
         order.save()
     request.session['cart'] = {}
 
-    return redirect('cart')
+    return redirect('landingPage/cart')
 
 
 def testimonial(request):
