@@ -223,7 +223,8 @@ def page_404(request, exception):
     return render(request, '404.html')
 
 def contact(request):
-    """View function for rendering the contact page."""
+    if request.method == 'POST':
+        return redirect('landingPage:index')
     return render(request, 'landingPage/contact.html')
 
 def product_list(request):
