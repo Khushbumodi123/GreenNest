@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from .models import Customer
+from .models import Customer, Order
 
 class SignupForm(UserCreationForm):
     first_name = forms.CharField(max_length=50)
@@ -30,5 +30,10 @@ class SetPasswordForm(forms.Form):
         if password1 and password2 and password1 != password2:
             raise forms.ValidationError("The two password fields didn’t match.")
         return cleaned_data
+
+class OrderForm(forms.ModelForm):
+    class Meta:
+        model = Order
+        fields = ['first_name', 'last_name', 'address', 'city', 'country', 'province', 'postcode', 'phone', 'email']
 
 
