@@ -1,56 +1,62 @@
-{% extends 'landingPage/base.html' %}
+{% extends 'landingPage/authbase.html' %}
+{% load static %}
 
 {% block content %}
-<!-- Signup Page Start -->
+
 <div class="container-fluid py-5">
     <div class="container py-5">
         <div class="row justify-content-center">
             <div class="col-lg-6 border rounded p-4 m-4 bg-light">
                 <div class="text-center mb-4">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Shopping_cart_with_food_clip_art_2.svg/307px-Shopping_cart_with_food_clip_art_2.svg.png" alt="" class="img-fluid" style="height: 150px;">
+                    <img src="{% static 'images/logo.jpeg' %}" alt="GreenNest Logo" class="img-fluid" style="height: 200px;">
                 </div>
                 <h2 class="text-center">Create An Account</h2>
                 <hr>
-                <form action="/signup/" method="POST"> <!-- Note the trailing slash -->
+                <form method="POST"> <!-- Removed action attribute -->
                     {% csrf_token %}
-                    {% if error %}
-                    <div class="alert alert-danger" role="alert">
-                        {{ error }}
-                    </div>
-                    {% endif %}
-                    <!-- First Name -->
+                    {{ form.non_field_errors }}
                     <div class="form-group mb-3">
-                        <label for="firstname">First Name</label>
-                        <input type="text" name="firstname" id="firstname" value="{{ values.first_name }}" class="form-control form-control-sm" placeholder="">
+{#                        <label for="firstname" class="float-left">First Name</label>#}
+                        <input type="text" name="first_name" id="firstname" value="{{ form.first_name.value|default_if_none:'' }}" class="form-control form-control-sm" placeholder="First Name">
+                        {{ form.first_name.errors }}
                     </div>
-                    <!-- Last Name -->
                     <div class="form-group mb-3">
-                        <label for="lastname">Last Name</label>
-                        <input type="text" name="lastname" id="lastname" value="{{ values.last_name }}" class="form-control form-control-sm" placeholder="">
+{#                        <label for="lastname" class="float-left">Last Name</label>#}
+                        <input type="text" name="last_name" id="lastname" value="{{ form.last_name.value|default_if_none:'' }}" class="form-control form-control-sm" placeholder="Last Name">
+                        {{ form.last_name.errors }}
                     </div>
-                    <!-- Phone -->
                     <div class="form-group mb-3">
-                        <label for="phone">Phone</label>
-                        <input type="text" name="phone" id="phone" value="{{ values.phone }}" class="form-control form-control-sm" placeholder="565698959">
+{#                        <label for="phone" class="float-left">Phone</label>#}
+                        <input type="text" name="phone" id="phone" value="{{ form.phone.value|default_if_none:'' }}" class="form-control form-control-sm" placeholder="Phone Number">
+                        {{ form.phone.errors }}
                     </div>
-                    <!-- Email -->
                     <div class="form-group mb-3">
-                        <label for="email">Email</label>
-                        <input required type="email" name="email" id="email" value="{{ values.email }}" class="form-control form-control-sm" placeholder="example@gmail.com">
+{#                        <label for="email" class="float-left">Email</label>#}
+                        <input required type="email" name="email" id="email" value="{{ form.email.value|default_if_none:'' }}" class="form-control form-control-sm" placeholder="Email">
+                        {{ form.email.errors }}
                     </div>
-                    <!-- Password -->
                     <div class="form-group mb-3">
-                        <label for="password">Password</label>
-                        <input type="password" name="password" id="password" class="form-control form-control-sm" placeholder="********">
+{#                        <label for="password1" class="float-left">Password</label>#}
+                        <input type="password" name="password1" id="password1" class="form-control form-control-sm" placeholder="Password">
+                        {{ form.password1.errors }}
+                    </div>
+                    <div class="form-group mb-3">
+{#                        <label for="password2" class="float-left">Confirm Password</label>#}
+                        <input type="password" name="password2" id="password2" class="form-control form-control-sm" placeholder="Confirm Password">
+                        {{ form.password2.errors }}
                     </div>
                     <hr>
                     <div class="text-center">
                         <input class="btn btn-info btn-sm" type="submit" value="Create An Account">
                     </div>
                 </form>
+                <div class="text-center mt-3">
+                    <p>Already have an account? <a href="{% url 'landingPage:login' %}">Login here</a></p>
+                </div>
             </div>
         </div>
     </div>
 </div>
-<!-- Signup Page End -->
+
 {% endblock %}
+

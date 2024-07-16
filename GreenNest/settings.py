@@ -47,9 +47,10 @@ INSTALLED_APPS = [
     'landingPage',
 ]
 
+AUTH_USER_MODEL = 'landingPage.Customer'
+
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
-#AUTH_USER_MODEL = 'authapp.CustomUser'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -83,6 +84,8 @@ TEMPLATES = [
 WSGI_APPLICATION = 'GreenNest.wsgi.application'
 
 APPEND_SLASH = False
+
+LOGIN_URL = 'landingPage/login/'
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
@@ -130,7 +133,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 
 STATIC_ROOT = BASE_DIR / 'static_root'
 MEDIA_ROOT = BASE_DIR / 'media_root'
