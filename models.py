@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User
+import datetime
 
 class Product(models.Model):
     name = models.CharField(max_length=200)
@@ -8,23 +8,27 @@ class Product(models.Model):
     def __str__(self):
         return self.name
 
+class Customer(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    name = models.CharField(max_length=200)
+    email = models.EmailField()
+
+    def __str__(self):
+        return self.name
+
 class Order(models.Model):
-    user = models.ForeignKey(User, related_name='orders', on_delete=models.CASCADE)
-    created = models.DateTimeField(auto_now_add=True)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, default=0)
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, default=0)
+    quantity = models.IntegerField(default=1)
+    price = models.IntegerField()
+    address = models.CharField(max_length=50, default='', blank=True)
+    phone = models.CharField(max_length=50, default='', blank=True)
+    date = models.DateField(default=datetime.datetime.today)
+    status = models.BooleanField(default=False)
 
-    def get_total_cost(self):
-        return sum(item.get_total() for item in self.items.all())
+    def placeOrder(self):
+        self.save()
 
-    def __str__(self):
-        return f'Order {self.id}'
-
-class OrderItem(models.Model):
-    order = models.ForeignKey(Order, related_name='items', on_delete=models.CASCADE)
-    product = models.ForeignKey(Product, related_name='order_items', on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField(default=1)
-
-    def get_total(self):
-        return self.product.price * self.quantity
-
-    def __str__(self):
-        return f'{self.quantity} of {self.product.name}'
+    @staticmethod
+    def get_orders_by_customer(customer_id):
+        return Order.objects.filter(customer=customer_id).order_by('-date')
