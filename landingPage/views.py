@@ -1,11 +1,12 @@
 from django.shortcuts import render,redirect, get_object_or_404
 from django.views import View
 from django.http import HttpResponseRedirect
+from django.contrib.auth.decorators import login_required
 from .models import Category, Product, Customer, Order
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.hashers import  check_password
 from django.contrib.auth import authenticate, login, logout
-from .forms import SignupForm, LoginForm, PasswordResetForm, SetPasswordForm
+from .forms import SignupForm, LoginForm, PasswordResetForm, SetPasswordForm, OrderForm
 
 def index(request):
     products = Product.objects.all()
@@ -139,33 +140,74 @@ def product_detail(request, product_id):
 
 
 def cart(request):
-    ids = list(request.session.get('cart').keys())
-    products = Product.get_products_by_id(ids)
-    print(products)
-    return render(request , 'landingPage/cart.html' , {'products' : products} )
-    
-
-def checkout(request):
-    address = request.POST.get('address')
-    phone = request.POST.get('phone')
-    customer = request.session.get('customer')
+    if not request.session.get('cart'):
+        request.session['cart'] = {}
     cart = request.session.get('cart')
+    product_ids = list(cart.keys())
+    products = Product.get_products_by_id(product_ids)
+    context = {
+        'products': products,
+        'cart': cart
+    }
+    return render(request, 'landingPage/cart.html', context)
+
+def add_to_cart(request, product_id):
+    cart = request.session.get('cart', {})
+    quantity = cart.get(str(product_id), 0)
+    cart[str(product_id)] = quantity + 1
+    request.session['cart'] = cart
+    return redirect('landingPage:cart')
+
+def remove_from_cart(request, product_id):
+    cart = request.session.get('cart', {})
+    if str(product_id) in cart:
+        del cart[str(product_id)]
+    request.session['cart'] = cart
+    return redirect('landingPage:cart')
+
+def update_cart_quantity(request, product_id, action):
+    cart = request.session.get('cart', {})
+    if str(product_id) in cart:
+        if action == 'increment':
+            cart[str(product_id)] += 1
+        elif action == 'decrement':
+            cart[str(product_id)] -= 1
+            if cart[str(product_id)] == 0:
+                del cart[str(product_id)]
+    request.session['cart'] = cart
+    return redirect('landingPage:cart')
+
+@login_required(login_url='landingPage:login')
+def checkout(request):
+    customer_id = request.user.id
+    if not customer_id:
+        return redirect('landingPage:login')
+
+    cart = request.session.get('cart', {})
     products = Product.get_products_by_id(list(cart.keys()))
-    print(address, phone, customer, cart, products)
 
-    for product in products:
-        print(cart.get(str(product.id)))
-        order = Order(customer=Customer(id=customer),
-                          product=product,
-                          price=product.price,
-                          address=address,
-                          phone=phone,
-                          quantity=cart.get(str(product.id)))
-        order.save()
-    request.session['cart'] = {}
+    if request.method == 'POST':
+        form = OrderForm(request.POST)
+        if form.is_valid():
+            for product in products:
+                order = form.save(commit=False)
+                order.customer = Customer.objects.get(id=customer_id)
+                order.product = product
+                order.quantity = cart.get(str(product.id))
+                order.price = product.price
+                order.save()
+            request.session['cart'] = {}
+            return redirect('landingPage:cart')
+    else:
+        form = OrderForm()
 
-    return redirect('landingPage/cart')
+    context = {
+        'form': form,
+        'products': products,
+        'cart': cart
+    }
 
+    return render(request, 'landingPage/checkout.html', context)
 
 def testimonial(request):
     """View function for rendering the testimonial page."""
@@ -176,7 +218,8 @@ def page_404(request, exception):
     return render(request, '404.html')
 
 def contact(request):
-    """View function for rendering the contact page."""
+    if request.method == 'POST':
+        return redirect('landingPage:index')
     return render(request, 'landingPage/contact.html')
 
 def product_list(request):

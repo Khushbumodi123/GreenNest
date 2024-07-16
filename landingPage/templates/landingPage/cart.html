@@ -1,7 +1,6 @@
 {% extends 'landingPage/base.html' %}
 {% load static %}
-{% load cart %}
-{% load custom_filter %}
+{% load cart_tags %}
 
 {% block content %}
 <!-- Cart Page Start -->
@@ -36,15 +35,15 @@
                         <td>
                             <div class="input-group quantity mt-4" style="width: 100px;">
                                 <div class="input-group-btn">
-                                    <button class="btn btn-sm btn-minus rounded-circle bg-light border">
+                                    <a href="{% url 'landingPage:update_cart_quantity' product.id 'decrement' %}" class="btn btn-sm btn-minus rounded-circle bg-light border">
                                         <i class="fa fa-minus"></i>
-                                    </button>
+                                    </a>
                                 </div>
                                 <input type="text" class="form-control form-control-sm text-center border-0" value="{{ product|cart_quantity:request.session.cart }}">
                                 <div class="input-group-btn">
-                                    <button class="btn btn-sm btn-plus rounded-circle bg-light border">
+                                    <a href="{% url 'landingPage:update_cart_quantity' product.id 'increment' %}" class="btn btn-sm btn-plus rounded-circle bg-light border">
                                         <i class="fa fa-plus"></i>
-                                    </button>
+                                    </a>
                                 </div>
                             </div>
                         </td>
@@ -52,9 +51,9 @@
                             <p class="mb-0 mt-4">{{ product|price_total:request.session.cart|currency }}</p>
                         </td>
                         <td>
-                            <button class="btn btn-md rounded-circle bg-light border mt-4">
+                            <a href="{% url 'landingPage:remove_from_cart' product.id %}" class="btn btn-md rounded-circle bg-light border mt-4">
                                 <i class="fa fa-times text-danger"></i>
-                            </button>
+                            </a>
                         </td>
                     </tr>
                     {% endfor %}
@@ -87,7 +86,7 @@
                         <h5 class="mb-0 ps-4 me-4">Total</h5>
                         <p class="mb-0 pe-4">{{ products|total_cart_price:request.session.cart|add:"3.00"|currency }}</p>
                     </div>
-                    <button class="btn border-secondary rounded-pill px-4 py-3 text-primary text-uppercase mb-4 ms-4" type="button" data-toggle="modal" data-target="#checkoutModal">Proceed Checkout</button>
+                        <a href="{% url 'landingPage:checkout' %}" class="btn border-secondary rounded-pill px-4 py-3 text-primary text-uppercase mb-4 ms-4">Proceed Checkout</a>
                 </div>
             </div>
         </div>
@@ -107,7 +106,7 @@
             </div>
             <div class="modal-body">
                 <div class="m-2 p-3">
-                    <form action="/check-out" method="POST">
+                    <form action="{% url 'landingPage:checkout' %}" method="POST">
                         {% csrf_token %}
                         <div class="form-group">
                             <label for="address">Address</label>
@@ -125,3 +124,5 @@
     </div>
 </div>
 {% endblock %}
+
+
