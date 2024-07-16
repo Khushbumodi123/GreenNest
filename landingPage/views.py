@@ -1,12 +1,13 @@
 from django.shortcuts import render,redirect, get_object_or_404
 from django.views import View
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from .models import Category, Product, Customer, Order
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.hashers import  check_password
 from django.contrib.auth import authenticate, login, logout
 from .forms import SignupForm, LoginForm, PasswordResetForm, SetPasswordForm, OrderForm
+
 
 def index(request):
     products = Product.objects.all()
@@ -307,6 +308,18 @@ def remove_from_cart(request, product_id):
             del cart[product_id]
     request.session['cart'] = cart
     return redirect('landingPage:product_detail', product_id=product_id)
+
+
+def profileTemp(request):
+    if request.user.is_authenticated:
+        #customer = Customer.get_customer_by_email(request.user.email)
+        print(request.user.email)
+        #print(customer)
+        #if customer:
+        #return render(request, 'profile_page/profile1.html', {'customer': customer})
+        return HttpResponse(request.user.email)
+    else:
+        return HttpResponse("not!")
 
 
 
