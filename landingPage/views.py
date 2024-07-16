@@ -32,6 +32,7 @@ def login_view(request):
             user = authenticate(request, email=email, password=password)
             if user is not None:
                 print("Login Successful")
+                request.session['customer'] = user.id
                 login(request, user)
                 return redirect('landingPage:index')
             else:
@@ -42,7 +43,9 @@ def login_view(request):
 
 def logout_view(request):
     logout(request)
-    return redirect('landingPage:login')
+    if 'customer' in request.session:
+        del request.session['customer']
+    return redirect('landingPage:index')
 
 def password_reset_request(request):
     if request.method == "POST":
@@ -106,8 +109,11 @@ def category_products(request, category_id):
     return render(request, 'landingPage/shop.html', context)
 
 def search(request):
-    query = request.GET.get('q')
-    products = Product.objects.filter(name__icontains=query)
+    query = request.GET.get('query')
+    if query:
+        products = Product.objects.filter(name__icontains=query)
+    else:
+        products = Product.objects.none()
     return render(request, 'landingPage/search_results.html', {'products': products, 'query': query})
 
 def shop(request):
@@ -289,7 +295,7 @@ def store(request):
     print('you are : ', request.session.get('email'))
     return render(request, 'landinPage/index.html', data)
 
-
+@login_required(login_url='login')
 def add_to_cart(request, product_id):
     cart = request.session.get('cart', {})
     if product_id in cart:
