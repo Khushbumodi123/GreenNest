@@ -93,21 +93,24 @@ class Product(models.Model):
         return Product.objects.all()
 
 class Order(models.Model):
-
-    product = models.ForeignKey(Product,
-                                on_delete=models.CASCADE, default=0)
-    customer = models.ForeignKey(Customer,
-                                 on_delete=models.CASCADE, default=0)
-
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, default=0)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, default=0)
     quantity = models.IntegerField(default=1)
-    price = models.IntegerField()
-    address = models.CharField(max_length=50, default='', blank=True)
-    phone = models.CharField(max_length=50, default='', blank=True)
-    date = models.DateField(default=datetime.datetime.today)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    address = models.CharField(max_length=255, default='')
+    city = models.CharField(max_length=50, default='')
+    country = models.CharField(max_length=50, default='')
+    province = models.CharField(max_length=50, default='')  # New field for Province
+    postcode = models.CharField(max_length=20, default='')
+    phone = models.CharField(max_length=15, default='')
+    email = models.EmailField(default='default@example.com')
+    first_name = models.CharField(max_length=50, default='')
+    last_name = models.CharField(max_length=50, default='')
+    date = models.DateField(auto_now_add=True)
     status = models.BooleanField(default=False)
 
-    def placeOrder(self):
-        self.save()
+    def __str__(self):
+        return f'Order {self.id} by {self.customer.email}'
 
     @staticmethod
     def get_orders_by_customer(customer_id):

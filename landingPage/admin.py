@@ -15,8 +15,7 @@ class CustomerAdmin(admin.ModelAdmin):
 
 
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ['product', 'customer', 'quantity',
-                    'price', 'address', 'phone']
+    list_display = ['product', 'customer', 'quantity','price', 'address', 'phone']
 
 admin.site.site_header = "Welcome To e-Shop"
 admin.site.site_title = "e-Shop"

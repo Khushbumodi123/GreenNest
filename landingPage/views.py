@@ -1,11 +1,12 @@
 from django.shortcuts import render,redirect, get_object_or_404
 from django.views import View
 from django.http import HttpResponseRedirect
+from django.contrib.auth.decorators import login_required
 from .models import Category, Product, Customer, Order
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.hashers import  check_password
 from django.contrib.auth import authenticate, login, logout
-from .forms import SignupForm, LoginForm, PasswordResetForm, SetPasswordForm
+from .forms import SignupForm, LoginForm, PasswordResetForm, SetPasswordForm, OrderForm
 
 def index(request):
     products = Product.objects.all()
@@ -169,50 +170,37 @@ def update_cart_quantity(request, product_id, action):
     request.session['cart'] = cart
     return redirect('landingPage:cart')
 
-
+@login_required(login_url='landingPage:login')
 def checkout(request):
+    customer_id = request.user.id
+    if not customer_id:
+        return redirect('landingPage:login')
+
+    cart = request.session.get('cart', {})
+    products = Product.get_products_by_id(list(cart.keys()))
+
     if request.method == 'POST':
-        customer_id = request.session.get('customer')
-        if not customer_id:
-            return redirect('landingPage:login')
-
-        first_name = request.POST.get('first_name')
-        last_name = request.POST.get('last_name')
-        address = request.POST.get('address')
-        city = request.POST.get('city')
-        country = request.POST.get('country')
-        postcode = request.POST.get('postcode')
-        phone = request.POST.get('phone')
-        email = request.POST.get('email')
-        order_notes = request.POST.get('order_notes')
-        shipping = request.POST.get('shipping')
-        payment_method = request.POST.get('payment_method')
-
-        cart = request.session.get('cart')
-        products = Product.get_products_by_id(list(cart.keys()))
-
-        for product in products:
-            order = Order(
-                customer=Customer(id=customer_id),
-                product=product,
-                price=product.price,
-                address=address,
-                phone=phone,
-                quantity=cart.get(str(product.id))
-            )
-            order.save()
-
-        request.session['cart'] = {}
-        return redirect('landingPage:cart')
+        form = OrderForm(request.POST)
+        if form.is_valid():
+            for product in products:
+                order = form.save(commit=False)
+                order.customer = Customer.objects.get(id=customer_id)
+                order.product = product
+                order.quantity = cart.get(str(product.id))
+                order.price = product.price
+                order.save()
+            request.session['cart'] = {}
+            return redirect('landingPage:cart')
     else:
-        cart = request.session.get('cart', {})
-        product_ids = list(cart.keys())
-        products = Product.get_products_by_id(product_ids)
-        context = {
-            'products': products,
-            'cart': cart
-        }
-        return render(request, 'landingPage/checkout.html', context)
+        form = OrderForm()
+
+    context = {
+        'form': form,
+        'products': products,
+        'cart': cart
+    }
+
+    return render(request, 'landingPage/checkout.html', context)
 
 def testimonial(request):
     """View function for rendering the testimonial page."""

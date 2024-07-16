@@ -1,60 +1,210 @@
+{#{% extends 'landingPage/base.html' %}#}
+{#{% load static %}#}
+{#{% load cart_tags %}#}
+{##}
+{#{% block content %}#}
+{#<!-- Checkout Page Start -->#}
+{#<div class="container-fluid py-5" style="margin-top: 80px;">#}
+{#    <div class="container py-5">#}
+{#        <h1 class="mb-4">Billing details</h1>#}
+{#        <form action="{% url 'landingPage:checkout' %}" method="post">#}
+{#            {% csrf_token %}#}
+{#            <div class="row g-5">#}
+{#                <div class="col-md-12 col-lg-7">#}
+{#                    <div class="row">#}
+{#                        <div class="col-md-6 mb-3">#}
+{#                            <label class="form-label">First Name<sup>*</sup></label>#}
+{#                            <input type="text" class="form-control" name="first_name" required>#}
+{#                        </div>#}
+{#                        <div class="col-md-6 mb-3">#}
+{#                            <label class="form-label">Last Name<sup>*</sup></label>#}
+{#                            <input type="text" class="form-control" name="last_name" required>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                    <div class="mb-3">#}
+{#                        <label class="form-label">Address <sup>*</sup></label>#}
+{#                        <input type="text" class="form-control" name="address" placeholder="House Number Street Name" required>#}
+{#                    </div>#}
+{#                    <div class="mb-3">#}
+{#                        <label class="form-label">Town/City<sup>*</sup></label>#}
+{#                        <input type="text" class="form-control" name="city" required>#}
+{#                    </div>#}
+{#                    <div class="mb-3">#}
+{#                        <label class="form-label">Country<sup>*</sup></label>#}
+{#                        <input type="text" class="form-control" name="country" required>#}
+{#                    </div>#}
+{#                    <div class="mb-3">#}
+{#                        <label class="form-label">Postcode/Zip<sup>*</sup></label>#}
+{#                        <input type="text" class="form-control" name="postcode" required>#}
+{#                    </div>#}
+{#                    <div class="mb-3">#}
+{#                        <label class="form-label">Mobile<sup>*</sup></label>#}
+{#                        <input type="tel" class="form-control" name="phone" required>#}
+{#                    </div>#}
+{#                    <div class="mb-3">#}
+{#                        <label class="form-label">Email Address<sup>*</sup></label>#}
+{#                        <input type="email" class="form-control" name="email" required>#}
+{#                    </div>#}
+{#                </div>#}
+{#                <div class="col-md-12 col-lg-5">#}
+{#                    <div class="table-responsive">#}
+{#                        <table class="table">#}
+{#                            <thead>#}
+{#                                <tr>#}
+{#                                    <th scope="col">Products</th>#}
+{#                                    <th scope="col">Name</th>#}
+{#                                    <th scope="col">Price</th>#}
+{#                                    <th scope="col">Quantity</th>#}
+{#                                    <th scope="col">Total</th>#}
+{#                                </tr>#}
+{#                            </thead>#}
+{#                            <tbody>#}
+{#                                {% for product in products %}#}
+{#                                <tr>#}
+{#                                    <th scope="row">#}
+{#                                        <div class="d-flex align-items-center mt-2">#}
+{#                                            <img src="{{ product.image.url }}" class="img-fluid rounded-circle" style="width: 90px; height: 90px;" alt="{{ product.name }}">#}
+{#                                        </div>#}
+{#                                    </th>#}
+{#                                    <td class="py-5">{{ product.name }}</td>#}
+{#                                    <td class="py-5">{{ product.price|currency }}</td>#}
+{#                                    <td class="py-5">{{ product|cart_quantity:cart }}</td>#}
+{#                                    <td class="py-5">{{ product|price_total:cart|currency }}</td>#}
+{#                                </tr>#}
+{#                                {% endfor %}#}
+{#                                <tr>#}
+{#                                    <th scope="row"></th>#}
+{#                                    <td class="py-5"></td>#}
+{#                                    <td class="py-5"></td>#}
+{#                                    <td class="py-5">#}
+{#                                        <p class="mb-0 text-dark py-3">Subtotal</p>#}
+{#                                    </td>#}
+{#                                    <td class="py-5">#}
+{#                                        <div class="py-3 border-bottom border-top">#}
+{#                                            <p class="mb-0 text-dark">{{ products|total_cart_price:cart|currency }}</p>#}
+{#                                        </div>#}
+{#                                    </td>#}
+{#                                </tr>#}
+{#                                <tr>#}
+{#                                    <th scope="row"></th>#}
+{#                                    <td class="py-5">#}
+{#                                        <p class="mb-0 text-dark text-uppercase py-3">TOTAL</p>#}
+{#                                    </td>#}
+{#                                    <td class="py-5"></td>#}
+{#                                    <td class="py-5"></td>#}
+{#                                    <td class="py-5">#}
+{#                                        <div class="py-3 border-bottom border-top">#}
+{#                                            <p class="mb-0 text-dark">{{ products|total_cart_price:cart|add:"0.00"|currency }}</p>#}
+{#                                        </div>#}
+{#                                    </td>#}
+{#                                </tr>#}
+{#                            </tbody>#}
+{#                        </table>#}
+{#                    </div>#}
+{#                    <div class="row g-4 text-center align-items-center justify-content-center border-bottom py-3">#}
+{#                        <div class="col-12">#}
+{#                            <div class="form-check text-start my-3">#}
+{#                                <input type="radio" class="form-check-input bg-primary border-0" id="Transfer-1" name="payment_method" value="Direct Bank Transfer" checked>#}
+{#                                <label class="form-check-label" for="Transfer-1">Direct Bank Transfer</label>#}
+{#                            </div>#}
+{#                            <p class="text-start text-dark">Make your payment directly into our bank account. Please use your Order ID as the payment reference. Your order will not be shipped until the funds have cleared in our account.</p>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                    <div class="row g-4 text-center align-items-center justify-content-center border-bottom py-3">#}
+{#                        <div class="col-12">#}
+{#                            <div class="form-check text-start my-3">#}
+{#                                <input type="radio" class="form-check-input bg-primary border-0" id="Payments-1" name="payment_method" value="Check Payments">#}
+{#                                <label class="form-check-label" for="Payments-1">Check Payments</label>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                    <div class="row g-4 text-center align-items-center justify-content-center border-bottom py-3">#}
+{#                        <div class="col-12">#}
+{#                            <div class="form-check text-start my-3">#}
+{#                                <input type="radio" class="form-check-input bg-primary border-0" id="Delivery-1" name="payment_method" value="Cash On Delivery">#}
+{#                                <label class="form-check-label" for="Delivery-1">Cash On Delivery</label>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                    <div class="row g-4 text-center align-items-center justify-content-center border-bottom py-3">#}
+{#                        <div class="col-12">#}
+{#                            <div class="form-check text-start my-3">#}
+{#                                <input type="radio" class="form-check-input bg-primary border-0" id="Paypal-1" name="payment_method" value="Paypal">#}
+{#                                <label class="form-check-label" for="Paypal-1">Paypal</label>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                    <div class="row g-4 text-center align-items-center justify-content-center pt-4">#}
+{#                        <button type="submit" class="btn border-secondary py-3 px-4 text-uppercase w-100 text-primary">Place Order</button>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{#        </form>#}
+{#    </div>#}
+{#</div>#}
+{#<!-- Checkout Page End -->#}
+{##}
+{#{% endblock %}#}
+
+<!-- checkout.html -->
+
+<!-- checkout.html -->
+
+<!-- checkout.html -->
+
 {% extends 'landingPage/base.html' %}
 {% load static %}
 {% load cart_tags %}
 
 {% block content %}
-<!-- Checkout Page Start -->
+<style>
+    .billing-details-form input[type="text"], .billing-details-form input[type="email"], .billing-details-form input[type="tel"], .billing-details-form input[type="number"], .billing-details-form input[type="password"], .billing-details-form select, .billing-details-form textarea {
+        width: 100%;
+        padding: 5px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        margin-top: 6px;
+        margin-bottom: 16px;
+        resize: vertical;
+    }
+
+    .billing-details-form label {
+        margin-bottom: 10px;
+        font-weight: bold;
+    }
+
+    .billing-details-form button {
+        background-color: #4CAF50;
+        color: white;
+        padding: 14px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        text-transform: uppercase;
+    }
+
+    .billing-details-form button:hover {
+        background-color: #45a049;
+    }
+
+    .billing-details-form {
+        display: flex;
+        flex-direction: column;
+    }
+</style>
+
 <div class="container-fluid py-5" style="margin-top: 80px;">
     <div class="container py-5">
         <h1 class="mb-4">Billing details</h1>
-        <form action="{% url 'landingPage:checkout' %}" method="post">
+        <form action="{% url 'landingPage:checkout' %}" method="post" class="billing-details-form">
             {% csrf_token %}
             <div class="row g-5">
                 <div class="col-md-12 col-lg-7">
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">First Name<sup>*</sup></label>
-                            <input type="text" class="form-control" name="first_name" required>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Last Name<sup>*</sup></label>
-                            <input type="text" class="form-control" name="last_name" required>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Company Name</label>
-                        <input type="text" class="form-control" name="company_name">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Address <sup>*</sup></label>
-                        <input type="text" class="form-control" name="address" placeholder="House Number Street Name" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Town/City<sup>*</sup></label>
-                        <input type="text" class="form-control" name="city" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Country<sup>*</sup></label>
-                        <input type="text" class="form-control" name="country" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Postcode/Zip<sup>*</sup></label>
-                        <input type="text" class="form-control" name="postcode" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Mobile<sup>*</sup></label>
-                        <input type="tel" class="form-control" name="phone" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Email Address<sup>*</sup></label>
-                        <input type="email" class="form-control" name="email" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Order Notes (Optional)</label>
-                        <textarea name="order_notes" class="form-control" spellcheck="false" cols="30" rows="4"></textarea>
-                    </div>
+                    {{ form.as_p }}
+                    <button type="submit" class="btn border-secondary py-3 px-4 text-uppercase w-100 text-primary">Place Order</button>
                 </div>
                 <div class="col-md-12 col-lg-5">
+                    <h4>Your Order</h4>
                     <div class="table-responsive">
                         <table class="table">
                             <thead>
@@ -96,26 +246,6 @@
                                 <tr>
                                     <th scope="row"></th>
                                     <td class="py-5">
-                                        <p class="mb-0 text-dark py-4">Shipping</p>
-                                    </td>
-                                    <td colspan="3" class="py-5">
-                                        <div class="form-check text-start">
-                                            <input type="radio" class="form-check-input bg-primary border-0" id="Shipping-1" name="shipping" value="Free Shipping" checked>
-                                            <label class="form-check-label" for="Shipping-1">Free Shipping</label>
-                                        </div>
-                                        <div class="form-check text-start">
-                                            <input type="radio" class="form-check-input bg-primary border-0" id="Shipping-2" name="shipping" value="Flat rate: $15.00">
-                                            <label class="form-check-label" for="Shipping-2">Flat rate: $15.00</label>
-                                        </div>
-                                        <div class="form-check text-start">
-                                            <input type="radio" class="form-check-input bg-primary border-0" id="Shipping-3" name="shipping" value="Local Pickup: $8.00">
-                                            <label class="form-check-label" for="Shipping-3">Local Pickup: $8.00</label>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th scope="row"></th>
-                                    <td class="py-5">
                                         <p class="mb-0 text-dark text-uppercase py-3">TOTAL</p>
                                     </td>
                                     <td class="py-5"></td>
@@ -129,47 +259,11 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class="row g-4 text-center align-items-center justify-content-center border-bottom py-3">
-                        <div class="col-12">
-                            <div class="form-check text-start my-3">
-                                <input type="radio" class="form-check-input bg-primary border-0" id="Transfer-1" name="payment_method" value="Direct Bank Transfer" checked>
-                                <label class="form-check-label" for="Transfer-1">Direct Bank Transfer</label>
-                            </div>
-                            <p class="text-start text-dark">Make your payment directly into our bank account. Please use your Order ID as the payment reference. Your order will not be shipped until the funds have cleared in our account.</p>
-                        </div>
-                    </div>
-                    <div class="row g-4 text-center align-items-center justify-content-center border-bottom py-3">
-                        <div class="col-12">
-                            <div class="form-check text-start my-3">
-                                <input type="radio" class="form-check-input bg-primary border-0" id="Payments-1" name="payment_method" value="Check Payments">
-                                <label class="form-check-label" for="Payments-1">Check Payments</label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row g-4 text-center align-items-center justify-content-center border-bottom py-3">
-                        <div class="col-12">
-                            <div class="form-check text-start my-3">
-                                <input type="radio" class="form-check-input bg-primary border-0" id="Delivery-1" name="payment_method" value="Cash On Delivery">
-                                <label class="form-check-label" for="Delivery-1">Cash On Delivery</label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row g-4 text-center align-items-center justify-content-center border-bottom py-3">
-                        <div class="col-12">
-                            <div class="form-check text-start my-3">
-                                <input type="radio" class="form-check-input bg-primary border-0" id="Paypal-1" name="payment_method" value="Paypal">
-                                <label class="form-check-label" for="Paypal-1">Paypal</label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row g-4 text-center align-items-center justify-content-center pt-4">
-                        <button type="submit" class="btn border-secondary py-3 px-4 text-uppercase w-100 text-primary">Place Order</button>
-                    </div>
                 </div>
             </div>
         </form>
     </div>
 </div>
-<!-- Checkout Page End -->
-
 {% endblock %}
+
+
