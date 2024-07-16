@@ -1,8 +1,21 @@
+# Default ignored files
+/shelf/
+/workspace.xml
+# Editor-based HTTP Client requests
+/httpRequests/
+# Datasource local storage ignored files
+/dataSources/
+/dataSources.local.xml/
+/.idea/
+
+# Ignore the SQLite database file
+db.sqlite3
+
 # Django #
 *.log
 *.pot
 *.pyc
-_pycache_
+__pycache__
 db.sqlite3
 media
 
@@ -48,6 +61,7 @@ atlassian-ide-plugin.xml
 # Python # 
 *.py[cod] 
 *$py.class 
+*.pyc
 
 # Distribution / packaging 
 .Python build/ 
