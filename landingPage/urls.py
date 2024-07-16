@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from .middlewares.auth import  auth_middleware
 
 app_name = 'landingPage'
 

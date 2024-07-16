@@ -1,15 +1,82 @@
 from django.shortcuts import render,redirect, get_object_or_404
 from django.views import View
 from django.http import HttpResponseRedirect
+from django.contrib.auth.decorators import login_required
 from .models import Category, Product, Customer, Order
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.hashers import  check_password
-from .forms import CustomLoginForm
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
+from .forms import SignupForm, LoginForm, PasswordResetForm, SetPasswordForm, OrderForm
 
 def index(request):
     products = Product.objects.all()
     return render(request, 'landingPage/index.html', {'products' : products})
+
+def signup(request):
+    if request.method == 'POST':
+        form = SignupForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('landingPage:login')
+    else:
+        form = SignupForm()
+    return render(request, 'landingPage/signup.html', {'form': form})
+
+def login_view(request):
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data.get('email')
+            password = form.cleaned_data.get('password')
+            user = authenticate(request, email=email, password=password)
+            if user is not None:
+                print("Login Successful")
+                login(request, user)
+                return redirect('landingPage:index')
+            else:
+                return render(request, 'landingPage/login.html', {'form': form, 'error': 'Invalid credentials'})
+    else:
+        form = LoginForm()
+    return render(request, 'landingPage/login.html', {'form': form})
+
+def logout_view(request):
+    logout(request)
+    return redirect('landingPage:login')
+
+def password_reset_request(request):
+    if request.method == "POST":
+        form = PasswordResetForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            user = Customer.objects.filter(email=email).first()
+            if user:
+                request.session['reset_email'] = email
+                return redirect('landingPage:password_reset_confirm')
+            else:
+                return render(request, 'landingPage/password_reset.html', {'form': form, 'error': 'Email not found.'})
+    else:
+        form = PasswordResetForm()
+    return render(request, 'landingPage/password_reset.html', {'form': form})
+
+def password_reset_confirm(request):
+    email = request.session.get('reset_email')
+    if not email:
+        return redirect('landingPage:password_reset')
+
+    user = Customer.objects.filter(email=email).first()
+    if not user:
+        return redirect('landingPage:password_reset')
+
+    if request.method == "POST":
+        form = SetPasswordForm(request.POST)
+        if form.is_valid():
+            new_password = form.cleaned_data['new_password1']
+            user.set_password(new_password)
+            user.save()
+            return redirect('landingPage:login')
+    else:
+        form = SetPasswordForm()
+    return render(request, 'landingPage/password_reset_confirm.html', {'form': form})
 
 def category_products(request, category_id):
     categories = Category.objects.all()
@@ -73,33 +140,74 @@ def product_detail(request, product_id):
 
 
 def cart(request):
-    ids = list(request.session.get('cart').keys())
-    products = Product.get_products_by_id(ids)
-    print(products)
-    return render(request , 'landingPage/cart.html' , {'products' : products} )
-    
-
-def checkout(request):
-    address = request.POST.get('address')
-    phone = request.POST.get('phone')
-    customer = request.session.get('customer')
+    if not request.session.get('cart'):
+        request.session['cart'] = {}
     cart = request.session.get('cart')
+    product_ids = list(cart.keys())
+    products = Product.get_products_by_id(product_ids)
+    context = {
+        'products': products,
+        'cart': cart
+    }
+    return render(request, 'landingPage/cart.html', context)
+
+def add_to_cart(request, product_id):
+    cart = request.session.get('cart', {})
+    quantity = cart.get(str(product_id), 0)
+    cart[str(product_id)] = quantity + 1
+    request.session['cart'] = cart
+    return redirect('landingPage:cart')
+
+def remove_from_cart(request, product_id):
+    cart = request.session.get('cart', {})
+    if str(product_id) in cart:
+        del cart[str(product_id)]
+    request.session['cart'] = cart
+    return redirect('landingPage:cart')
+
+def update_cart_quantity(request, product_id, action):
+    cart = request.session.get('cart', {})
+    if str(product_id) in cart:
+        if action == 'increment':
+            cart[str(product_id)] += 1
+        elif action == 'decrement':
+            cart[str(product_id)] -= 1
+            if cart[str(product_id)] == 0:
+                del cart[str(product_id)]
+    request.session['cart'] = cart
+    return redirect('landingPage:cart')
+
+@login_required(login_url='landingPage:login')
+def checkout(request):
+    customer_id = request.user.id
+    if not customer_id:
+        return redirect('landingPage:login')
+
+    cart = request.session.get('cart', {})
     products = Product.get_products_by_id(list(cart.keys()))
-    print(address, phone, customer, cart, products)
 
-    for product in products:
-        print(cart.get(str(product.id)))
-        order = Order(customer=Customer(id=customer),
-                          product=product,
-                          price=product.price,
-                          address=address,
-                          phone=phone,
-                          quantity=cart.get(str(product.id)))
-        order.save()
-    request.session['cart'] = {}
+    if request.method == 'POST':
+        form = OrderForm(request.POST)
+        if form.is_valid():
+            for product in products:
+                order = form.save(commit=False)
+                order.customer = Customer.objects.get(id=customer_id)
+                order.product = product
+                order.quantity = cart.get(str(product.id))
+                order.price = product.price
+                order.save()
+            request.session['cart'] = {}
+            return redirect('landingPage:cart')
+    else:
+        form = OrderForm()
 
-    return redirect('landingPage/cart')
+    context = {
+        'form': form,
+        'products': products,
+        'cart': cart
+    }
 
+    return render(request, 'landingPage/checkout.html', context)
 
 def testimonial(request):
     """View function for rendering the testimonial page."""
@@ -110,7 +218,8 @@ def page_404(request, exception):
     return render(request, '404.html')
 
 def contact(request):
-    """View function for rendering the contact page."""
+    if request.method == 'POST':
+        return redirect('landingPage:index')
     return render(request, 'landingPage/contact.html')
 
 def product_list(request):
@@ -125,110 +234,6 @@ def order(request):
         orders = Order.get_orders_by_customer(customer)
         print(orders)
         return render(request , 'orders.html'  , {'orders' : orders})
-
-
-
-class Signup(View):
-    def get(self, request):
-        return render(request, 'landingPage/signup.html')
-
-    def post(self, request):
-        postData = request.POST
-        first_name = postData.get('firstname')
-        last_name = postData.get('lastname')
-        phone = postData.get('phone')
-        email = postData.get('email')
-        password = postData.get('password')
-        # validation
-        value = {
-            'first_name': first_name,
-            'last_name': last_name,
-            'phone': phone,
-            'email': email
-        }
-        error_message = None
-
-        customer = Customer(first_name=first_name,
-                            last_name=last_name,
-                            phone=phone,
-                            email=email,
-                            password=password)
-        error_message = self.validateCustomer(customer)
-
-        if not error_message:
-            print(first_name, last_name, phone, email, password)
-            customer.password = make_password(customer.password)
-            customer.register()
-            return redirect('landingPage:login')
-        else:
-            data = {
-                'error': error_message,
-                'values': value
-            }
-            return render(request, 'landingPage/signup.html', data)
-
-    def validateCustomer(self, customer):
-        error_message = None;
-        if (not customer.first_name):
-            error_message = "First Name Required !!"
-        elif len(customer.first_name) < 4:
-            error_message = 'First Name must be 4 char long or more'
-        elif not customer.last_name:
-            error_message = 'Last Name Required'
-        elif len(customer.last_name) < 4:
-            error_message = 'Last Name must be 4 char long or more'
-        elif not customer.phone:
-            error_message = 'Phone Number required'
-        elif len(customer.phone) < 10:
-            error_message = 'Phone Number must be 10 char Long'
-        elif len(customer.password) < 6:
-            error_message = 'Password must be 6 char long'
-        elif len(customer.email) < 5:
-            error_message = 'Email must be 5 char long'
-        elif customer.isExists():
-            error_message = 'Email Address Already Registered..'
-        # saving
-
-        return error_message
-
-
-class Login(View):
-    return_url = None
-
-    def get(self, request):
-        Login.return_url = request.GET.get('return_url')
-        form = CustomLoginForm()
-        return render(request, 'landingPage/login.html', {'form': form})
-
-    def post(self, request):
-        form = CustomLoginForm(request, data=request.POST)
-        print(form)
-        print("nksns")
-        if form.is_valid():
-            print("shdsbdh")
-            email = form.cleaned_data.get('username')  # 'username' in form maps to 'email'
-            print("sjd")
-            password = form.cleaned_data.get('password')
-            print(email, password)
-            print("hello")
-            user = authenticate(request, username=email, password=password)
-            if user is not None:
-                login(request, user)
-                if Login.return_url:
-                    return redirect(Login.return_url)
-                else:
-                    Login.return_url = None
-                    return redirect('landingPage:index')
-            else:
-                error_message = 'Email or Password invalid !!'
-        else:
-            error_message = 'Please enter a correct username and password. Note that both fields may be case-sensitive.'
-        
-        return render(request, 'landingPage/login.html', {'form': form, 'error': error_message})  
-
-def logout(request):
-    request.session.clear()
-    return redirect('landingPage:login')
 
 # Create your views here.
 class Index(View):
