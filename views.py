@@ -3,7 +3,7 @@ from .models import Order
 
 def order_detail(request, order_id):
     order = get_object_or_404(Order, id=order_id)
-    previous_orders = Order.objects.filter(user=request.user).exclude(id=order_id)
+    previous_orders = Order.get_orders_by_customer(order.customer.id).exclude(id=order_id)
     context = {
         'order': order,
         'previous_orders': previous_orders
