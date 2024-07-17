@@ -10,10 +10,52 @@
     {% load static %}
     <!-- Custom CSS -->
     <link href="{% static 'profile_page/templates/profile_page/style.css' %}" rel="stylesheet">
+    <style>
+
+        .image-container {
+            
+            max-height: 300px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .profile-picture {
+            width: 200px;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 50%;
+            
+        }
+
+        label{
+            font-family: 'Times New Roman', serif;
+            font-size: 15px;
+        }
+
+        .form-control{
+            font-family: 'Times New Roman', serif;
+            font-size: 19px;
+        }
+
+        .btn-back {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+    </style>
 </head>
 <body>
 <div class="container mt-5">
-    <h2 class="text-center">User Profile</h2>
+    <h2 class="text-center">Hey 👋</h2>
+    <div class="form-group">
+        {% if user_profile.image %}
+            <div class="image-container">
+                <img src="{{ user_profile.image.url }}" alt="Profile Picture" class="profile-picture">
+            </div>
+        {% endif %}
+    </div>
     <form method="POST" action="{% url 'profile_page:profile' %}" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="form-row">
@@ -58,8 +100,12 @@
             <label for="profile_picture">Profile Picture</label>
             <input type="file" class="form-control-file" id="image" name="image" accept="image/*">
         </div>
+        
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
+    <div class="btn-back">
+        <a href="{% url 'landingPage:logout' %}" class="btn btn-secondary">Logout</a>
+    </div>
 </div>
 <!-- Bootstrap JS and dependencies -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
