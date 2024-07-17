@@ -1,10 +1,10 @@
 from django import forms
-from .models import UserProfile
+from landingPage.models import Customer
 
 class UserProfileForm(forms.ModelForm):
     class Meta:
-        model = UserProfile
+        model = Customer
         fields = [
-            'firstname', 'lastname', 'email', 'phone',
-            'address', 'city', 'country', 'postal_code', 'profile_picture'
+            'first_name', 'last_name', 'email', 'phone',
+            'address', 'city', 'country', 'postal_code', 'image'
         ]

@@ -36,6 +36,10 @@ class Customer(AbstractBaseUser):
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=True)
     image = models.ImageField(upload_to='customers/images/', default='customers/images/default.jpg')
+    address = models.CharField(max_length=255, default="xyz street")
+    city = models.CharField(max_length=100, default="New York")
+    country = models.CharField(max_length=100, default="USA")
+    postal_code = models.CharField(max_length=20, default="ABC DEF")
 
 
     objects = CustomerManager()

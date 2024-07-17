@@ -27,7 +27,7 @@ urlpatterns = [
     path('profile_page/', include('profile_page.urls')),
     #path('auth/', include('django.contrib.auth.urls')),
     #path('auth/', include('authapp.urls')),
-    path('seller_page/', include('seller_page.urls')),
+    #path('seller_page/', include('seller_page.urls')),
 
 ]
 
