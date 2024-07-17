@@ -51,6 +51,14 @@ class Customer(AbstractBaseUser):
 
     def has_module_perms(self, app_label):
         return True
+    
+    @staticmethod
+    def get_customer_by_email(email):
+        try:
+            return Customer.objects.get(email=email)
+        except:
+            return None
+
 
     
     # def is_staff(self):

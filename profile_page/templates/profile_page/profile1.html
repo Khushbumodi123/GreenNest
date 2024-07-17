@@ -1,4 +1,17 @@
+<!DOCTYPE html>
 <html>
-<h1> HI <h1>
-
+<head>
+    <title>Profile</title>
+</head>
+<body>
+    <h1>Profile</h1>
+    {% if customer.image %}
+        <p>Image URL: {{ customer.image.url }}</p>
+        <img src="{{ customer.image.url }}" alt="Profile Image" style="max-width: 200px; max-height: 200px;">
+    {% else %}
+        <p>{{ customer.email }}</p>
+        <p>{{ customer.first_name }}</p>
+        <h1>No profile image available</h1>
+    {% endif %}
+</body>
 </html>

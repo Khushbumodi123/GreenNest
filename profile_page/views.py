@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
+
+from landingPage.models import Customer
 from .forms import UserProfileForm
 
 def profile(request):
@@ -11,3 +13,11 @@ def profile(request):
     else:
         form = UserProfileForm()
     return render(request, 'profile_page/profile.html', {'form': form})
+
+
+def prof(request):
+    if request.user.is_authenticated:
+        customer = Customer.get_customer_by_email(email=request.user.email)
+        return render(request, 'profile_page/profile1.html', {'customer': customer})
+    else:
+        return HttpResponse("not!!!")
