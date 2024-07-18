@@ -321,6 +321,8 @@ def profileTemp(request):
     else:
         return HttpResponse("not!")
 
+def about_us(request):
+    return render(request, 'landingPage/about_us.html')
 
 
 
