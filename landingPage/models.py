@@ -1,8 +1,8 @@
-from django.db import models
+from django.db import models # type: ignore
 import datetime
-from django.utils import timezone
-from django.core.exceptions import ValidationError
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.utils import timezone # type: ignore
+from django.core.exceptions import ValidationError # type: ignore
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager # type: ignore
 
 def one_year_from_today():
     return timezone.now() + datetime.timedelta(days=365)
@@ -18,12 +18,13 @@ class CustomerManager(BaseUserManager):
         email = self.normalize_email(email)
         user = self.model(email=email)
         user.set_password(password)
+        user.is_staff = True
         user.save(using=self._db)
         return user
 
     def create_superuser(self, email, password=None):
         user = self.create_user(email, password)
-        user.is_admin = True
+        user.is_superuser = True
         user.save(using=self._db)
         return user
 
@@ -33,7 +34,9 @@ class Customer(AbstractBaseUser):
     phone = models.CharField(max_length=15)
     email = models.EmailField(unique=True)
     is_active = models.BooleanField(default=True)
-    is_admin = models.BooleanField(default=False)
+    is_staff = models.BooleanField(default=True)
+    image = models.ImageField(upload_to='customers/images/', default='customers/images/default.jpg')
+
 
     objects = CustomerManager()
 
@@ -48,9 +51,9 @@ class Customer(AbstractBaseUser):
     def has_module_perms(self, app_label):
         return True
 
-    @property
-    def is_staff(self):
-        return self.is_admin
+    
+    # def is_staff(self):
+    #     return self.is_admin
 
 # --------------Category Module -------------------
 class Category(models.Model):

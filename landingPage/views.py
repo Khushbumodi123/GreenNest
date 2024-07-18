@@ -1,12 +1,13 @@
 from django.shortcuts import render,redirect, get_object_or_404
 from django.views import View
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from .models import Category, Product, Customer, Order
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.hashers import  check_password
 from django.contrib.auth import authenticate, login, logout
 from .forms import SignupForm, LoginForm, PasswordResetForm, SetPasswordForm, OrderForm
+
 
 def index(request):
     products = Product.objects.all()
@@ -31,6 +32,7 @@ def login_view(request):
             user = authenticate(request, email=email, password=password)
             if user is not None:
                 print("Login Successful")
+                request.session['customer'] = user.id
                 login(request, user)
                 return redirect('landingPage:index')
             else:
@@ -41,7 +43,9 @@ def login_view(request):
 
 def logout_view(request):
     logout(request)
-    return redirect('landingPage:login')
+    if 'customer' in request.session:
+        del request.session['customer']
+    return redirect('landingPage:index')
 
 def password_reset_request(request):
     if request.method == "POST":
@@ -105,9 +109,29 @@ def category_products(request, category_id):
     return render(request, 'landingPage/shop.html', context)
 
 def search(request):
-    query = request.GET.get('q')
-    products = Product.objects.filter(name__icontains=query)
-    return render(request, 'landingPage/search_results.html', {'products': products, 'query': query})
+    query = request.GET.get('query')
+    search_history = request.COOKIES.get('search_history', '')
+
+    if query:
+        products = Product.objects.filter(name__icontains=query)
+
+        # Update search history
+        if search_history:
+            search_history_list = search_history.split('|')
+            if query not in search_history_list:
+                search_history_list.append(query)
+            search_history = '|'.join(search_history_list[-5:])  # Limit history to last 5 searches
+        else:
+            search_history = query
+    else:
+        products = Product.objects.none()
+
+    response = render(request, 'landingPage/search_results.html', {'products': products, 'query': query, 'search_history': search_history.split('|') if search_history else []})
+
+    # Set the updated search history in the cookies
+    response.set_cookie('search_history', search_history, max_age=30*24*60*60)  # Cookie expires in 30 days
+
+    return response
 
 def shop(request):
     categories = Category.objects.all()
@@ -288,7 +312,7 @@ def store(request):
     print('you are : ', request.session.get('email'))
     return render(request, 'landinPage/index.html', data)
 
-
+@login_required(login_url='login')
 def add_to_cart(request, product_id):
     cart = request.session.get('cart', {})
     if product_id in cart:
@@ -307,6 +331,18 @@ def remove_from_cart(request, product_id):
             del cart[product_id]
     request.session['cart'] = cart
     return redirect('landingPage:product_detail', product_id=product_id)
+
+
+def profileTemp(request):
+    if request.user.is_authenticated:
+        #customer = Customer.get_customer_by_email(request.user.email)
+        print(request.user.email)
+        #print(customer)
+        #if customer:
+        #return render(request, 'profile_page/profile1.html', {'customer': customer})
+        return HttpResponse(request.user.email)
+    else:
+        return HttpResponse("not!")
 
 
 
