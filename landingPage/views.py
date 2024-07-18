@@ -324,6 +324,14 @@ def profileTemp(request):
 def about_us(request):
     return render(request, 'landingPage/about_us.html')
 
+def privacyPolicy(request):
+    return render(request, 'landingPage/privacy_policy.html')
 
+def terms_conditions(request):
+    return render(request, 'landingPage/terms_conditions.html')
 
+def return_policy(request):
+    return render(request, 'landingPage/return_policy.html')
 
+def faqs_help(request):
+    return render(request, 'landingPage/faqs_help.html')

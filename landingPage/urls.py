@@ -33,4 +33,8 @@ urlpatterns = [
     path('update_cart_quantity/<int:product_id>/<str:action>/', views.update_cart_quantity, name='update_cart_quantity'),
     path('userProfile/', views.profileTemp, name='user_profile'),
     path('about-us/', views.about_us, name='about_us'),
+    path('privacyPolicy/', views.privacyPolicy, name='privacyPolicy'),
+    path('terms-conditions/', views.terms_conditions, name='terms_conditions'),
+    path('return-policy/', views.return_policy, name='return_policy'),
+    path('faqs-help/', views.faqs_help, name='faqs_help'),
 ]
