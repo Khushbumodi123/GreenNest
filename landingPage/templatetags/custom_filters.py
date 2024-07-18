@@ -11,4 +11,6 @@ def truncate_with_ellipsis(value, max_length):
 
 @register.filter
 def cart_total_quantity(cart):
-    return sum(cart.values())
+    if cart:
+        return sum(cart.values())
+    return 0
