@@ -47,6 +47,7 @@
         </div>
         <div class="container px-0">
             <nav class="navbar navbar-light bg-white navbar-expand-xl">
+                <!-- <img src="{% static 'img/GreenNestLogo.png' %}" ></i> -->
                 <a href="{% url 'landingPage:index' %}" class="navbar-brand"><h1 class="text-primary display-6">GreenNest</h1></a>
                 <button class="navbar-toggler py-2 px-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
                     <span class="fa fa-bars text-primary"></span>
@@ -76,10 +77,11 @@
                         <a href="{% url 'landingPage:contact' %}" class="nav-item nav-link">Contact</a>
                     </div>
                     <div class="d-flex m-3 me-0">
-                        <form class="d-flex" method="get" action="{% url 'landingPage:search' %}">
-                            <input class="form-control me-2" type="search" name="query" placeholder="Search" aria-label="Search" required>
+                        <form class="d-flex position-relative" method="get" action="{% url 'landingPage:search' %}">
+                            <input class="form-control me-2" type="search" name="query" placeholder="Search" aria-label="Search" required autocomplete="off">
                             <button class="btn-search btn border border-secondary btn-md-square rounded-circle bg-white me-4" data-bs-toggle="modal"><i class="fas fa-search text-primary"></i></button>
-                        </form>
+                            <div id="search-history" class="list-group position-absolute w-100" style="top: 100%; z-index: 1000;"></div>
+                        </form>                        
                         <a href="{% url 'landingPage:cart' %}" class="position-relative me-4 my-auto">
                             <i class="fa fa-shopping-bag fa-2x"></i>
                             <span class="position-absolute bg-secondary rounded-circle d-flex align-items-center justify-content-center text-dark px-1" style="top: -5px; left: 15px; height: 20px; min-width: 20px;">{{ request.session.cart.keys|length }}</span>
@@ -187,9 +189,103 @@
     <script src="{% static 'lib/waypoints/waypoints.min.js' %}"></script>
     <script src="{% static 'lib/owlcarousel/owl.carousel.min.js' %}"></script>
     <script src="{% static 'lib/lightbox/js/lightbox.min.js' %}"></script>
+    
 
     <!-- Template Javascript -->
     <script src="{% static 'js/main.js' %}"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const searchInput = document.querySelector('input[name="query"]');
+            const searchForm = searchInput.closest('form');
+            const searchHistoryContainer = document.getElementById('search-history');
+    
+            // Function to get cookie
+            function getCookie(name) {
+                const value = `; ${document.cookie}`;
+                const parts = value.split(`; ${name}=`);
+                if (parts.length === 2) return parts.pop().split(';').shift();
+            }
+    
+            // Function to set cookie
+            function setCookie(name, value, days) {
+                let expires = "";
+                if (days) {
+                    const date = new Date();
+                    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                    expires = "; expires=" + date.toUTCString();
+                }
+                document.cookie = name + "=" + (value || "") + expires + "; path=/";
+            }
+    
+            // Function to store search query in cookies
+            function storeSearchQuery(query) {
+                const searchHistory = getCookie('searchHistory');
+                let queries = searchHistory ? JSON.parse(searchHistory) : [];
+    
+                // Avoid duplicating the same query
+                if (!queries.includes(query)) {
+                    queries.push(query);
+                    if (queries.length > 5) {  // Limit history to last 5 searches
+                        queries.shift();
+                    }
+                    setCookie('searchHistory', JSON.stringify(queries), 7); // Store for 7 days
+                }
+            }
+    
+            // Function to populate search input with the last search query
+            function populateLastSearchQuery() {
+                const searchHistory = getCookie('searchHistory');
+                if (searchHistory) {
+                    const queries = JSON.parse(searchHistory);
+                    if (queries.length > 0) {
+                        searchInput.value = queries[queries.length - 1];
+                    }
+                }
+            }
+    
+            // Function to show search history suggestions
+            function showSearchHistory() {
+                const searchHistory = getCookie('searchHistory');
+                if (searchHistory) {
+                    const queries = JSON.parse(searchHistory);
+                    searchHistoryContainer.innerHTML = queries.map(query => `
+                        <a href="#" class="list-group-item list-group-item-action" style="color: #333; padding: 10px;">${query}</a>
+                    `).join('');
+                    searchHistoryContainer.style.display = 'block';
+                } else {
+                    searchHistoryContainer.style.display = 'none';
+                }
+            }
+    
+            // Populate search input with the last search query on page load
+            populateLastSearchQuery();
+    
+            // Store search query on form submission
+            searchForm.addEventListener('submit', function () {
+                storeSearchQuery(searchInput.value);
+            });
+    
+            // Show search history suggestions when the search input is focused
+            searchInput.addEventListener('focus', showSearchHistory);
+    
+            // Hide search history suggestions when clicking outside the input
+            document.addEventListener('click', function (e) {
+                if (!searchForm.contains(e.target)) {
+                    searchHistoryContainer.style.display = 'none';
+                }
+            });
+    
+            // Fill search input with the clicked history item
+            searchHistoryContainer.addEventListener('click', function (e) {
+                if (e.target.tagName === 'A') {
+                    searchInput.value = e.target.textContent;
+                    searchHistoryContainer.style.display = 'none';
+                }
+            });
+        });
+    </script>
+    
 </body>
 
 </html>

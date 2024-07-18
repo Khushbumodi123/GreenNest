@@ -110,11 +110,28 @@ def category_products(request, category_id):
 
 def search(request):
     query = request.GET.get('query')
+    search_history = request.COOKIES.get('search_history', '')
+
     if query:
         products = Product.objects.filter(name__icontains=query)
+
+        # Update search history
+        if search_history:
+            search_history_list = search_history.split('|')
+            if query not in search_history_list:
+                search_history_list.append(query)
+            search_history = '|'.join(search_history_list[-5:])  # Limit history to last 5 searches
+        else:
+            search_history = query
     else:
         products = Product.objects.none()
-    return render(request, 'landingPage/search_results.html', {'products': products, 'query': query})
+
+    response = render(request, 'landingPage/search_results.html', {'products': products, 'query': query, 'search_history': search_history.split('|') if search_history else []})
+
+    # Set the updated search history in the cookies
+    response.set_cookie('search_history', search_history, max_age=30*24*60*60)  # Cookie expires in 30 days
+
+    return response
 
 def shop(request):
     categories = Category.objects.all()
