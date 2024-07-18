@@ -345,7 +345,7 @@ def user_history(request):
         order_details.append(orderItem)
 
     # Pass the order details to the template for rendering
-    return render(request, 'myapp/user_history.html',
+    return render(request, 'landingPage/user_history.html',
                   {'order_details': order_details})
 
 
