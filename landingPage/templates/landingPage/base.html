@@ -1,4 +1,6 @@
 {% load static %}
+{% load custom_filters %}
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -84,7 +86,7 @@
                         </form>                        
                         <a href="{% url 'landingPage:cart' %}" class="position-relative me-4 my-auto">
                             <i class="fa fa-shopping-bag fa-2x"></i>
-                            <span class="position-absolute bg-secondary rounded-circle d-flex align-items-center justify-content-center text-dark px-1" style="top: -5px; left: 15px; height: 20px; min-width: 20px;">{{ request.session.cart.keys|length }}</span>
+                            <span class="position-absolute bg-secondary rounded-circle d-flex align-items-center justify-content-center text-dark px-1" style="top: -5px; left: 15px; height: 20px; min-width: 20px;">{{ request.session.cart|cart_total_quantity }}</span>
                         </a>
                         {% if request.session.customer %}
                         <a href="{% url 'landingPage:user_profile' %}" class="my-auto">
@@ -238,9 +240,6 @@
                 const searchHistory = getCookie('searchHistory');
                 if (searchHistory) {
                     const queries = JSON.parse(searchHistory);
-                    if (queries.length > 0) {
-                        searchInput.value = queries[queries.length - 1];
-                    }
                 }
             }
     
