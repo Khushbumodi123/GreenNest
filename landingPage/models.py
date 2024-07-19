@@ -1,8 +1,8 @@
-from django.db import models
+from django.db import models # type: ignore
 import datetime
-from django.utils import timezone
-from django.core.exceptions import ValidationError
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.utils import timezone # type: ignore
+from django.core.exceptions import ValidationError # type: ignore
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager # type: ignore
 
 def one_year_from_today():
     return timezone.now() + datetime.timedelta(days=365)
@@ -45,7 +45,6 @@ class Customer(AbstractBaseUser):
     objects = CustomerManager()
 
     USERNAME_FIELD = 'email'
-    #REQUIRED_FIELDS = ['first_name', 'last_name', 'phone']
 
     def __str__(self):
         return self.email
