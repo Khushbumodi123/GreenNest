@@ -6,8 +6,8 @@
     <h2 class="text-center text-primary">Hey 👋</h2>
     <div class="form-group">
         {% if user_profile.image %}
-            <div class="image-container">
-                <img src="{{ user_profile.image.url }}" alt="Profile Picture" class="profile-picture">
+            <div class="image-container" style="max-height: 300px; max-width: 300px; display: flex; justify-content: center; align-items: center; overflow: hidden;">
+                <img src="{{ user_profile.image.url }}" alt="Profile Picture" class="profile-picture" style="width: 300px ; height: 300px ; object-fit: cover ; border-radius: 50% ;">
             </div>
         {% endif %}
     </div>
