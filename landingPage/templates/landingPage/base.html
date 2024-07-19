@@ -89,7 +89,7 @@
                             <span class="position-absolute bg-secondary rounded-circle d-flex align-items-center justify-content-center text-dark px-1" style="top: -5px; left: 15px; height: 20px; min-width: 20px;">{{ request.session.cart|cart_total_quantity }}</span>
                         </a>
                         {% if request.session.customer %}
-                        <a href="{% url 'landingPage:user_profile' %}" class="my-auto">
+                        <a href="{% url 'landingPage:profile' %}" class="my-auto">
                             {{ request.user.first_name|slice:":1" }}{{ request.user.last_name|slice:":1" }}
                         </a>
                         <a href="{% url 'landingPage:logout' %}" class="my-auto">
@@ -146,23 +146,21 @@
                 <div class="col-lg-3 col-md-6">
                     <div class="d-flex flex-column text-start footer-item">
                         <h4 class="text-light mb-3">Shop Info</h4>
-                        <a class="btn-link" href="">About Us</a>
-                        <a class="btn-link" href="">Contact Us</a>
-                        <a class="btn-link" href="">Privacy Policy</a>
-                        <a class="btn-link" href="">Terms & Condition</a>
-                        <a class="btn-link" href="">Return Policy</a>
-                        <a class="btn-link" href="">FAQs & Help</a>
+                        <a class="btn-link" href="{% url 'landingPage:about_us' %}">About Us</a>
+                        <a class="btn-link" href="{% url 'landingPage:contact' %}">Contact Us</a>
+                        <a class="btn-link" href="{% url 'landingPage:privacyPolicy' %}">Privacy Policy</a>
+                        <a class="btn-link" href="{% url 'landingPage:terms_conditions' %}">Terms & Condition</a>
+                        <a class="btn-link" href="{% url 'landingPage:return_policy' %}">Return Policy</a>
+                        <a class="btn-link" href="{% url 'landingPage:faqs_help' %}">FAQs & Help</a>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6">
                     <div class="d-flex flex-column text-start footer-item">
                         <h4 class="text-light mb-3">Account</h4>
-                        <a class="btn-link" href="">My Account</a>
-                        <a class="btn-link" href="">Shop details</a>
-                        <a class="btn-link" href="">Shopping Cart</a>
+                        <a class="btn-link" href="{% url 'profile_page:profile' %}">My Account</a>
+                        <a class="btn-link" href="{% url 'landingPage:cart' %}">Shopping Cart</a>
                         <a class="btn-link" href="">Wishlist</a>
                         <a class="btn-link" href="">Order History</a>
-                        <a class="btn-link" href="">International Orders</a>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6">

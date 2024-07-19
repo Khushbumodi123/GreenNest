@@ -1,0 +1,26 @@
+{% extends 'landingPage/base.html' %}
+{% load static %}
+{% load cart %}
+{% load custom_filter %}
+{% load custom_filters %}
+
+{% block content %}
+<div class="container-fluid py-5 mb-5 hero-header">
+    <div class="container py-5">
+        <div class="row g-5 align-items-center">
+            <div class="col-md-12 col-lg-7">
+                <h4 class="mb-3 text-secondary">About Us</h4>
+                <h1 class="mb-5 display-3 text-primary">Our Mission and Vision</h1>
+                <p class="text-secondary">
+                    GreenNest is an online marketplace dedicated to eco-friendly household and everyday products, designed to simplify sustainable purchasing. The platform will centralise a variety of green products, from biodegradable kitchenware to organic cleaning supplies, enabling consumers to make environmentally conscious decisions easily. Utilising a tech stack comprising Python and Django for backend operations, HTML, CSS, and JavaScript for a responsive front-end, and Django's default SQLite for development, scalable to PostgreSQL as needed. GreenChoice aims to enhance consumer access to sustainable products while supporting green businesses by broadening their market reach. The purpose of GreenNest is twofold: to reduce the environmental impact of daily consumer products and to promote sustainable living practices. By vetting vendors and products against strict sustainability criteria, providing detailed product descriptions, customer reviews, and sustainability ratings, the platform ensures transparency and educates consumers, thereby fostering a more sustainable consumer culture. This solution not only makes eco-friendly living accessible but also builds consumer confidence and drives the widespread adoption of sustainable products, creating a significant environmental benefit.
+                </p>
+                <p class="text-secondary">
+                    We believe in making it easier for everyone to make better choices for the environment. Our vision is to create a world where sustainability is the norm, and eco-friendly products are accessible to all.
+                </p>
+            </div>
+            <div class="col-md-12 col-lg-5">
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

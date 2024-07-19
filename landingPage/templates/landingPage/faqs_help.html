@@ -1,0 +1,62 @@
+{% extends 'landingPage/base.html' %}
+{% load static %}
+{% block content %}
+    {% csrf_token %}
+<!-- FAQs & Help Start -->
+<div class="container-fluid py-5">
+    <div class="container py-5">
+        <div class="p-5 bg-light rounded">
+            <div class="row g-4">
+                <div class="col-12">
+                    <div class="text-center mx-auto" style="max-width: 700px;">
+                        <h1 class="text-primary">FAQs & Help</h1>
+                        <p class="mb-4">Find answers to commonly asked questions and get help with any issues you might have.</p>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="h-100 rounded p-4 bg-white">
+
+
+                        <h3>1. What is GreenNest?</h3>
+                        <p>GreenNest is an e-commerce platform that offers a wide range of eco-friendly and sustainable products for your household and daily needs.</p>
+                        
+                        <h3>2. How can I place an order?</h3>
+                        <p>To place an order:</p>
+                        <ul>
+                            <li>Browse our product categories and select the items you wish to purchase.</li>
+                            <li>Add items to your cart and proceed to checkout.</li>
+                            <li>Enter your shipping and payment details.</li>
+                            <li>Review your order and submit it.</li>
+                        </ul>
+                        
+                        <h3>3. What payment methods do you accept?</h3>
+                        <p>We accept major credit cards (Visa, MasterCard, American Express), PayPal, and other secure payment methods.</p>
+                        
+                        <h3>4. How can I track my order?</h3>
+                        <p>Once your order has shipped, you will receive an email with a tracking number and a link to track your order.</p>
+                        
+                        <h3>5. Can I change or cancel my order?</h3>
+                        <p>If you need to change or cancel your order, please contact our customer service team as soon as possible. Once an order has been processed or shipped, changes or cancellations may not be possible.</p>
+                        
+                        <h3>6. What is your return policy?</h3>
+                        <p>For information on returns, please refer to our <a href="{% url 'landingPage:return_policy' %}">Return Policy</a>.</p>
+                        
+                        <h3>7. How can I contact customer service?</h3>
+                        <p>You can reach our customer service team via email at [contact email], or you can visit our <a href="{% url 'landingPage:contact' %}">Contact Us</a> page.</p>
+                        
+                        <h3>8. Do you offer international shipping?</h3>
+                        <p>Currently, we only offer shipping within [country]. We are working on expanding our shipping options.</p>
+                        
+                        <h3>9. How do I reset my password?</h3>
+                        <p>To reset your password, go to the login page and click on "Forgot Password." Follow the instructions sent to your email to reset your password.</p>
+                        
+                        <h3>10. Where can I find more information about your products?</h3>
+                        <p>Product details and descriptions are available on each product page. If you have specific questions, please contact our customer service team.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- FAQs & Help End -->
+{% endblock %}

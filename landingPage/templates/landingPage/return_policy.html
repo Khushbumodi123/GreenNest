@@ -1,0 +1,47 @@
+{% extends 'landingPage/base.html' %}
+{% load static %}
+{% block content %}
+    {% csrf_token %}
+<!-- Return Policy Start -->
+<div class="container-fluid py-5">
+    <div class="container py-5">
+        <div class="p-5 bg-light rounded">
+            <div class="row g-4">
+                <div class="col-12">
+                    <div class="text-center mx-auto" style="max-width: 700px;">
+                        <h1 class="text-primary">Return Policy</h1>
+                        <p class="mb-4">At GreenNest, we want you to be completely satisfied with your purchase. If you are not satisfied, you can return the product under the following conditions.</p>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="h-100 rounded p-4 bg-white">
+
+
+                        <h3>Eligibility for Returns</h3>
+                        <p>Items must be returned within 30 days of receipt.</p>
+                        <p>Items must be unused, in the same condition that you received them, and in their original packaging.</p>
+                        <p>Some items, such as perishable goods, custom products, or personal care items, are not eligible for return.</p>
+
+                        <h3>Return Process</h3>
+                        <p>1. Contact our customer service team at [contact email] to initiate a return.</p>
+                        <p>2. Provide your order number, a description of the item you wish to return, and the reason for the return.</p>
+                        <p>3. Our team will review your request and, if approved, will provide a return authorization and shipping instructions.</p>
+
+                        <h3>Refunds</h3>
+                        <p>Once your return is received and inspected, we will send you an email to notify you of the approval or rejection of your refund.</p>
+                        <p>If approved, your refund will be processed, and a credit will automatically be applied to your original method of payment within a certain amount of days.</p>
+
+                        <h3>Shipping Costs</h3>
+                        <p>If the return is a result of our error (you received an incorrect or defective item), we will cover the return shipping costs.</p>
+                        <p>For other returns, you will be responsible for paying the return shipping costs. Shipping costs are non-refundable.</p>
+
+                        <h3>Contact Us</h3>
+                        <p>If you have any questions regarding returns, please <a href="{% url 'landingPage:contact' %}">contact us</a> or visit our <a href="{% url 'landingPage:contact' %}">Contact Us</a> page.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Return Policy End -->
+{% endblock %}
