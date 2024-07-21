@@ -1,5 +1,6 @@
 from django.shortcuts import render,redirect, get_object_or_404
 from django.views import View
+from decimal import Decimal
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from .models import Category, Product, Customer, Order
@@ -169,24 +170,34 @@ def cart(request):
     cart = request.session.get('cart')
     product_ids = list(cart.keys())
     products = Product.get_products_by_id(product_ids)
+    total_cart_price = sum(product.price * cart[str(product.id)] for product in products)
+    shipping_cost = Decimal('3.00')
+    total_price_with_shipping = total_cart_price + shipping_cost
     context = {
         'products': products,
-        'cart': cart
+        'cart': cart,
+        'total_cart_price': total_cart_price,
+        'total_price_with_shipping': total_price_with_shipping
     }
     return render(request, 'landingPage/cart.html', context)
 
+@login_required(login_url='landingPage:login')
 def add_to_cart(request, product_id):
     cart = request.session.get('cart', {})
     quantity = cart.get(str(product_id), 0)
     cart[str(product_id)] = quantity + 1
     request.session['cart'] = cart
-    return redirect('landingPage:cart')
+    cart_count = sum(cart.values())
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return JsonResponse({'success': True, 'cart_count': cart_count})
+
+    return redirect(request.META.get('HTTP_REFERER'))
 
 def remove_from_cart(request, product_id):
     cart = request.session.get('cart', {})
     if str(product_id) in cart:
         del cart[str(product_id)]
-    request.session['cart'] = cart
+        request.session.modified = True
     return redirect('landingPage:cart')
 
 def update_cart_quantity(request, product_id, action):
@@ -209,6 +220,9 @@ def checkout(request):
 
     cart = request.session.get('cart', {})
     products = Product.get_products_by_id(list(cart.keys()))
+    total_cart_price = sum(product.price * cart[str(product.id)] for product in products)
+    shipping_cost = Decimal('3.00')  # Convert shipping cost to Decimal
+    total_price_with_shipping = total_cart_price + shipping_cost
 
     if request.method == 'POST':
         form = OrderForm(request.POST)
@@ -228,7 +242,9 @@ def checkout(request):
     context = {
         'form': form,
         'products': products,
-        'cart': cart
+        'cart': cart,
+        'total_cart_price': total_cart_price,
+        'total_price_with_shipping': total_price_with_shipping
     }
 
     return render(request, 'landingPage/checkout.html', context)
@@ -312,26 +328,15 @@ def store(request):
     print('you are : ', request.session.get('email'))
     return render(request, 'landinPage/index.html', data)
 
-@login_required(login_url='login')
-def add_to_cart(request, product_id):
-    cart = request.session.get('cart', {})
-    if product_id in cart:
-        cart[product_id] += 1
-    else:
-        cart[product_id] = 1
-    request.session['cart'] = cart
-    return redirect('landingPage:product_detail', product_id=product_id)
-
-def remove_from_cart(request, product_id):
-    cart = request.session.get('cart', {})
-    if product_id in cart:
-        if cart[product_id] > 1:
-            cart[product_id] -= 1
-        else:
-            del cart[product_id]
-    request.session['cart'] = cart
-    return redirect('landingPage:product_detail', product_id=product_id)
-
+# @login_required(login_url='login')
+# def add_to_cart(request, product_id):
+#     cart = request.session.get('cart', {})
+#     if product_id in cart:
+#         cart[product_id] += 1
+#     else:
+#         cart[product_id] = 1
+#     request.session['cart'] = cart
+#     return redirect('landingPage:product_detail', product_id=product_id)
 
 @login_required(login_url='login')
 def user_history(request):
