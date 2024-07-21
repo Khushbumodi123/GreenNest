@@ -27,14 +27,16 @@
                 <div class="col-md-12 col-lg-5">
                     <div id="carouselId" class="carousel slide position-relative" data-bs-ride="carousel">
                         <div class="carousel-inner" role="listbox">
-                            <div class="carousel-item active rounded">
-                                <img src="{% static 'img/hero-img-1.png' %}" class="img-fluid w-100 h-100 bg-secondary rounded" alt="First slide">
-                                <a href="#" class="btn px-4 py-2 text-white rounded">Eco-friendly Products</a>
+                        {% for product in products %}
+                            <div class="carousel-item {% if forloop.first %}active{% endif %} rounded">
+                                <img 
+                                    src="{{ product.image.url }}" 
+                                    class="d-block w-100" 
+                                    alt="{{ product.name }}" 
+                                    style="max-height: 400px; width: auto; margin: 0 auto;">
+                                
                             </div>
-                            <div class="carousel-item rounded">
-                                <img src="{% static 'img/hero-img-2.jpg' %}" class="img-fluid w-100 h-100 rounded" alt="Second slide">
-                                <a href="#" class="btn px-4 py-2 text-white rounded">Eco-friendly Products</a>
-                            </div>
+                            {% endfor %}
                         </div>
                         <button class="carousel-control-prev" type="button" data-bs-target="#carouselId" data-bs-slide="prev">
                             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -44,7 +46,7 @@
                             <span class="carousel-control-next-icon" aria-hidden="true"></span>
                             <span class="visually-hidden">Next</span>
                         </button>
-                    </div>
+                    </div>                    
                 </div>
             </div>
         </div>
@@ -83,8 +85,8 @@
                                 </div>
                                 <div class="text-white bg-secondary px-3 py-1 rounded position-absolute" style="top: 10px; left: 10px;">{{ product.category.name }}</div>
                                 <div class="p-4 border border-secondary border-top-0 rounded-bottom">
-                                    <h4>{{ product.name }}</h4>
-                                    <p>{{ product.description|truncate_with_ellipsis:36 }}</p>
+                                    <h4>{{ product.name|truncate_with_ellipsis:50 }}</h4>
+                                    <p>{{ product.description|truncate_with_ellipsis:28 }}</p>
                                 </a>
                                     <div class="d-flex justify-content-between flex-lg-wrap">
                                         {% if product.discount_price %}
@@ -108,7 +110,7 @@
                                                 </form>
                                             </div>
                                         {% else %}
-                                            <form action="" method="post">
+                                            <form action="{% url 'landingPage:add_to_cart' product.id %}" method="post">
                                                 {% csrf_token %}
                                                 <input type="hidden" name="product_id" value="{{ product.id }}">
                                                 <button type="submit" class="btn btn-primary btn-sm">Add to Cart</button>
