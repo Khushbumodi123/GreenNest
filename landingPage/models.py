@@ -36,6 +36,10 @@ class Customer(AbstractBaseUser):
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=True)
     image = models.ImageField(upload_to='customers/images/', default='customers/images/default.jpg')
+    address = models.CharField(max_length=255, default="Not Provided")
+    city = models.CharField(max_length=100, default="Not Provided")
+    country = models.CharField(max_length=100, default="Not Provided")
+    postal_code = models.CharField(max_length=20, default="Not Provided")
 
 
     objects = CustomerManager()
@@ -50,6 +54,14 @@ class Customer(AbstractBaseUser):
 
     def has_module_perms(self, app_label):
         return True
+    
+    @staticmethod
+    def get_customer_by_email(email):
+        try:
+            return Customer.objects.get(email=email)
+        except:
+            return None
+
 
     
     # def is_staff(self):

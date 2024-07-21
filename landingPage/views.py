@@ -338,6 +338,22 @@ def store(request):
 #     request.session['cart'] = cart
 #     return redirect('landingPage:product_detail', product_id=product_id)
 
+@login_required(login_url='login')
+def user_history(request):
+    current_user = request.user
+
+    user_orders = Order.objects.filter(customer=current_user)
+
+    order_details = []
+
+    for orderItem in user_orders.all():
+        order_details.append(orderItem)
+
+    # Pass the order details to the template for rendering
+    return render(request, 'landingPage/user_history.html',
+                  {'order_details': order_details})
+
+
 def profileTemp(request):
     if request.user.is_authenticated:
         #customer = Customer.get_customer_by_email(request.user.email)
@@ -349,7 +365,17 @@ def profileTemp(request):
     else:
         return HttpResponse("not!")
 
+def about_us(request):
+    return render(request, 'landingPage/about_us.html')
 
+def privacyPolicy(request):
+    return render(request, 'landingPage/privacy_policy.html')
 
+def terms_conditions(request):
+    return render(request, 'landingPage/terms_conditions.html')
 
+def return_policy(request):
+    return render(request, 'landingPage/return_policy.html')
 
+def faqs_help(request):
+    return render(request, 'landingPage/faqs_help.html')
