@@ -2,61 +2,97 @@
 {% load static %}
 
 {% block content %}
-
-<div class="container-fluid py-5">
+<!-- Sign Up Page Start -->
+<div class="container-fluid py-5 bg-light">
     <div class="container py-5">
         <div class="row justify-content-center">
-            <div class="col-lg-6 border rounded p-4 m-4 bg-light">
-                <div class="text-center mb-4">
-                    <img src="{% static 'images/logo.jpeg' %}" alt="GreenNest Logo" class="img-fluid" style="height: 200px;">
+            <div class="col-lg-6 border rounded p-4 m-4 bg-white shadow-lg" style="animation: fadeIn 3s;">
+                <div class="text-center mb-4" style="animation: bounceIn 3s;">
+                    <img src="{% static 'images/GreenNestLogo.png' %}" alt="GreenNest Logo" class="img-fluid" style="height: 150px;">
+                    <h1 style="font-family: 'Poppins', sans-serif; font-weight: bold; color: green;">GreenNest</h1>
                 </div>
-                <h2 class="text-center">Create An Account</h2>
+                <h2 class="text-center" style="font-family: 'Poppins', sans-serif; font-weight: bold; animation: fadeIn 3s;">Create An Account</h2>
                 <hr>
-                <form method="POST"> <!-- Removed action attribute -->
+                <form method="POST">
                     {% csrf_token %}
                     {{ form.non_field_errors }}
                     <div class="form-group mb-3">
-{#                        <label for="firstname" class="float-left">First Name</label>#}
-                        <input type="text" name="first_name" id="firstname" value="{{ form.first_name.value|default_if_none:'' }}" class="form-control form-control-sm" placeholder="First Name">
+                        <input type="text" name="first_name" id="firstname" value="{{ form.first_name.value|default_if_none:'' }}" class="form-control form-control-lg" placeholder="First Name" style="border-radius: 30px;">
                         {{ form.first_name.errors }}
                     </div>
                     <div class="form-group mb-3">
-{#                        <label for="lastname" class="float-left">Last Name</label>#}
-                        <input type="text" name="last_name" id="lastname" value="{{ form.last_name.value|default_if_none:'' }}" class="form-control form-control-sm" placeholder="Last Name">
+                        <input type="text" name="last_name" id="lastname" value="{{ form.last_name.value|default_if_none:'' }}" class="form-control form-control-lg" placeholder="Last Name" style="border-radius: 30px;">
                         {{ form.last_name.errors }}
                     </div>
                     <div class="form-group mb-3">
-{#                        <label for="phone" class="float-left">Phone</label>#}
-                        <input type="text" name="phone" id="phone" value="{{ form.phone.value|default_if_none:'' }}" class="form-control form-control-sm" placeholder="Phone Number">
+                        <input type="text" name="phone" id="phone" value="{{ form.phone.value|default_if_none:'' }}" class="form-control form-control-lg" placeholder="Phone Number" style="border-radius: 30px;">
                         {{ form.phone.errors }}
                     </div>
                     <div class="form-group mb-3">
-{#                        <label for="email" class="float-left">Email</label>#}
-                        <input required type="email" name="email" id="email" value="{{ form.email.value|default_if_none:'' }}" class="form-control form-control-sm" placeholder="Email">
+                        <input required type="email" name="email" id="email" value="{{ form.email.value|default_if_none:'' }}" class="form-control form-control-lg" placeholder="Email" style="border-radius: 30px;">
                         {{ form.email.errors }}
                     </div>
                     <div class="form-group mb-3">
-{#                        <label for="password1" class="float-left">Password</label>#}
-                        <input type="password" name="password1" id="password1" class="form-control form-control-sm" placeholder="Password">
+                        <input type="password" name="password1" id="password1" class="form-control form-control-lg" placeholder="Password" style="border-radius: 30px;">
                         {{ form.password1.errors }}
                     </div>
                     <div class="form-group mb-3">
-{#                        <label for="password2" class="float-left">Confirm Password</label>#}
-                        <input type="password" name="password2" id="password2" class="form-control form-control-sm" placeholder="Confirm Password">
+                        <input type="password" name="password2" id="password2" class="form-control form-control-lg" placeholder="Confirm Password" style="border-radius: 30px;">
                         {{ form.password2.errors }}
                     </div>
                     <hr>
                     <div class="text-center">
-                        <input class="btn btn-info btn-sm" type="submit" value="Create An Account">
+                        <input class="btn btn-success btn-lg col-lg-4" type="submit" value="Create An Account" style="border-radius: 30px;">
                     </div>
                 </form>
                 <div class="text-center mt-3">
-                    <p>Already have an account? <a href="{% url 'landingPage:login' %}">Login here</a></p>
+                    <p>Already have an account? <a href="{% url 'landingPage:login' %}" class="text-info">Login here</a></p>
                 </div>
             </div>
         </div>
     </div>
 </div>
+<!-- Sign Up Page End -->
 
+<!-- Custom CSS for Animations -->
+<style>
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    @keyframes bounceIn {
+        0%, 20%, 40%, 60%, 80%, 100% {
+            -webkit-animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+            animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+        }
+        0% {
+            opacity: 0;
+            -webkit-transform: scale3d(0.3, 0.3, 0.3);
+            transform: scale3d(0.3, 0.3, 0.3);
+        }
+        20% {
+            -webkit-transform: scale3d(1.1, 1.1, 1.1);
+            transform: scale3d(1.1, 1.1, 1.1);
+        }
+        40% {
+            -webkit-transform: scale3d(0.9, 0.9, 0.9);
+            transform: scale3d(0.9, 0.9, 0.9);
+        }
+        60% {
+            opacity: 1;
+            -webkit-transform: scale3d(1.03, 1.03, 1.03);
+            transform: scale3d(1.03, 1.03, 1.03);
+        }
+        80% {
+            -webkit-transform: scale3d(0.97, 0.97, 0.97);
+            transform: scale3d(0.97, 0.97, 0.97);
+        }
+        100% {
+            opacity: 1;
+            -webkit-transform: scale3d(1, 1, 1);
+            transform: scale3d(1, 1, 1);
+        }
+    }
+</style>
 {% endblock %}
-
