@@ -59,7 +59,9 @@
                     <div class="navbar-nav mx-auto">
                         <a href="{% url 'landingPage:index' %}" class="nav-item nav-link">Home</a>
                         <a href="{% url 'landingPage:shop' %}" class="nav-item nav-link">Shop</a>
+                        {% if request.session.customer %}
                         <a href="{% url 'landingPage:orders' %}" class="nav-item nav-link">My Orders</a>
+                        {% endif %}
                         <a href="{% url 'landingPage:contact' %}" class="nav-item nav-link">Contact</a>
                         <a href="{% url 'landingPage:about_us' %}" class="nav-item nav-link">About Us</a>
                     </div>
@@ -67,7 +69,9 @@
                         <form class="d-flex position-relative" method="get" action="{% url 'landingPage:search' %}">
                             <input class="form-control me-2" type="search" name="query" placeholder="Search" aria-label="Search" required autocomplete="off">
                             <button class="btn-search btn border border-secondary btn-md-square rounded-circle bg-white me-4" data-bs-toggle="modal"><i class="fas fa-search text-primary"></i></button>
-                            <div id="search-history" class="list-group position-absolute w-100" style="top: 100%; z-index: 1000;"></div>
+                            {% if request.session.customer %}
+                                <div id="search-history" class="list-group position-absolute w-100" style="top: 100%; z-index: 1000;"></div>
+                            {% endif %}
                         </form>
                         <a href="{% url 'landingPage:cart' %}" class="position-relative me-4 my-auto">
                             <i class="fa fa-shopping-bag fa-2x"></i>
