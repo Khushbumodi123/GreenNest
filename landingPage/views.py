@@ -273,7 +273,7 @@ def order(request):
         customer = request.session.get('customer')
         orders = Order.get_orders_by_customer(customer)
         print(orders)
-        return render(request , 'orders.html'  , {'orders' : orders})
+        return render(request , 'landingPage/order.html'  , {'orders' : orders})
 
 # Create your views here.
 class Index(View):
