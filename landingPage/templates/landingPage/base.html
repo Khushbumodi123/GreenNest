@@ -60,7 +60,7 @@
                         <a href="{% url 'landingPage:index' %}" class="nav-item nav-link">Home</a>
                         <a href="{% url 'landingPage:shop' %}" class="nav-item nav-link">Shop</a>
                         {% if request.session.customer %}
-                        <a href="{% url 'landingPage:orders' %}" class="nav-item nav-link">My Orders</a>
+                        <a href="{% url 'landingPage:order_detail' %}" class="nav-item nav-link">My Orders</a>
                         {% endif %}
                         <a href="{% url 'landingPage:contact' %}" class="nav-item nav-link">Contact</a>
                         <a href="{% url 'landingPage:about_us' %}" class="nav-item nav-link">About Us</a>
@@ -119,12 +119,6 @@
                             <p class="text-secondary mb-0">Sustainable Products</p>
                         </a>
                     </div>
-                    <div class="col-lg-6">
-                        <div class="position-relative mx-auto">
-                            <input class="form-control border-0 w-100 py-3 px-4 rounded-pill" type="number" placeholder="Your feedback">
-                            <button type="submit" class="btn btn-primary border-0 border-secondary py-3 px-4 position-absolute rounded-pill text-white" style="top: 0; right: 0;">Submit</button>
-                        </div>
-                    </div>
                 </div>
             </div>
             <div class="row g-5">
@@ -150,8 +144,7 @@
                         <h4 class="text-light mb-3">Account</h4>
                         <a class="btn-link" href="{% url 'profile_page:profile' %}">My Account</a>
                         <a class="btn-link" href="{% url 'landingPage:cart' %}">Shopping Cart</a>
-                        <a class="btn-link" href="">Wishlist</a>
-                        <a class="btn-link" href="">Order History</a>
+                        <a class="btn-link" href="{% url 'landingPage:order_detail' %}">Order History</a>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6">
@@ -161,7 +154,6 @@
                         <p>Email: info@greennest.com</p>
                         <p>Phone: +0123 4567 8910</p>
                         <p>Payment Accepted</p>
-                        <img src="#" class="img-fluid" alt="">
                     </div>
                 </div>
             </div>

@@ -6,6 +6,7 @@
 <!-- Orders Page Start -->
 <div class="container-fluid py-5">
     <div class="container py-5">
+        {% if orders %}
         <div class="table-responsive">
             <table class="table">
                 <thead>
@@ -56,6 +57,9 @@
                 </tbody>
             </table>
         </div>
+        {% else %}
+        <p> There is no Order History !!</p>
+        {% endif %}
     </div>
 </div>
 <!-- Orders Page End -->

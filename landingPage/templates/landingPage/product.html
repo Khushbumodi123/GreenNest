@@ -1,14 +1,18 @@
 {% extends 'landingPage/base.html' %}
 {% load static %}
+{% load cart %}
+{% load custom_filter %}
+{% load custom_filters %}
 {% block content %}
+
 <div class="container-fluid py-5 mb-5 hero-header">
 </div>
 <!-- Product Detail Start -->
 <div class="container-fluid py-5">
     <div class="container">
         <div class="row">
-            <div class="col-lg-6">
-                <img class="img-fluid w-80" src="{{ product.image.url }}" style="height: 300px" alt="{{ product.name }}">
+            <div class="col-lg-4">
+                <img class="img-fluid w-80" src="{{ product.image.url }}" style="height: 450px; width: 350px;" alt="{{ product.name }}">
             </div>
             <div class="col-lg-6">
                 <h3>{{ product.name }}</h3>
@@ -21,10 +25,17 @@
                 <p>Discount: {{ product.discount_price }}</p>
                 <p>Expiry Date: {{ product.expiration_date }}</p>
                
-                <form action="{% url 'landingPage:add_to_cart' product.id %}" method="post">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-primary">Add to Cart</button>
-                </form>
+                {% if product|is_in_cart:request.session.cart %}
+                                            <div>
+                                                <div class="btn btn-primary btn-sm">Added</div>
+                                            </div>
+                                        {% else %}
+                                            <form action="{% url 'landingPage:add_to_cart' product.id %}" method="post">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="product_id" value="{{ product.id }}">
+                                                <button type="submit" class="btn btn-primary btn-sm">Add to Cart</button>
+                                            </form>
+                                        {% endif %}
             </div>
         </div>
     </div>
