@@ -33,9 +33,7 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
-INSTALLED_APPS = [
-    'profile_page',
-    'seller_page',
+INSTALLED_APPS = [  
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -45,6 +43,9 @@ INSTALLED_APPS = [
     'myapp.apps.MyappConfig',
     'crispy_forms',
     'landingPage',
+    'profile_page',
+    'seller_page',
+    
 ]
 
 AUTH_USER_MODEL = 'landingPage.Customer'

@@ -1,15 +1,7 @@
-from django.db import models # type: ignore
-import datetime
-from django.utils import timezone # type: ignore
-from django.core.exceptions import ValidationError # type: ignore
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager # type: ignore
-
-def one_year_from_today():
-    return timezone.now() + datetime.timedelta(days=365)
-
-def validate_rating(value):
-    if value < 0 or value > 5:
-        raise ValidationError(f'Rating must be between 0 and 5. You entered {value}.')
+from django.db import models
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.utils import timezone
+from .utils import one_year_from_today, validate_rating  
 
 class CustomerManager(BaseUserManager):
     def create_user(self, email, password=None):
@@ -18,7 +10,6 @@ class CustomerManager(BaseUserManager):
         email = self.normalize_email(email)
         user = self.model(email=email)
         user.set_password(password)
-        user.is_staff = True
         user.save(using=self._db)
         return user
 
@@ -34,7 +25,6 @@ class Customer(AbstractBaseUser):
     phone = models.CharField(max_length=15)
     email = models.EmailField(unique=True)
     is_active = models.BooleanField(default=True)
-    is_staff = models.BooleanField(default=True)
     image = models.ImageField(upload_to='customers/images/', default='customers/images/default.jpg')
     address = models.CharField(max_length=255, default="Not Provided")
     city = models.CharField(max_length=100, default="Not Provided")
@@ -61,11 +51,6 @@ class Customer(AbstractBaseUser):
             return Customer.objects.get(email=email)
         except:
             return None
-
-
-    
-    # def is_staff(self):
-    #     return self.is_admin
 
 # --------------Category Module -------------------
 class Category(models.Model):
@@ -112,6 +97,7 @@ class Product(models.Model):
     def get_all_products():
         return Product.objects.all()
 
+# --------------Order Module -------------------
 class Order(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, default=0)
     product = models.ForeignKey(Product, on_delete=models.CASCADE, default=0)
@@ -120,7 +106,7 @@ class Order(models.Model):
     address = models.CharField(max_length=255, default='')
     city = models.CharField(max_length=50, default='')
     country = models.CharField(max_length=50, default='')
-    province = models.CharField(max_length=50, default='')  # New field for Province
+    province = models.CharField(max_length=50, default='')  
     postcode = models.CharField(max_length=20, default='')
     phone = models.CharField(max_length=15, default='')
     email = models.EmailField(default='default@example.com')
