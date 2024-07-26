@@ -8,7 +8,7 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth.hashers import  check_password
 from django.contrib.auth import authenticate, login, logout
 from .forms import SignupForm, LoginForm, PasswordResetForm, SetPasswordForm, OrderForm
-from django.http import JsonResponse
+
 
 def index(request):
     products = Product.objects.all()
@@ -109,6 +109,31 @@ def category_products(request, category_id):
 
     return render(request, 'landingPage/shop.html', context)
 
+def search(request):
+    query = request.GET.get('query')
+    search_history = request.COOKIES.get('search_history', '')
+
+    if query:
+        products = Product.objects.filter(name__icontains=query)
+
+        # Update search history
+        if search_history:
+            search_history_list = search_history.split('|')
+            if query not in search_history_list:
+                search_history_list.append(query)
+            search_history = '|'.join(search_history_list[-5:])  # Limit history to last 5 searches
+        else:
+            search_history = query
+    else:
+        products = Product.objects.none()
+
+    response = render(request, 'landingPage/search_results.html', {'products': products, 'query': query, 'search_history': search_history.split('|') if search_history else []})
+
+    # Set the updated search history in the cookies
+    response.set_cookie('search_history', search_history, max_age=30*24*60*60)  # Cookie expires in 30 days
+
+    return response
+
 def shop(request):
     categories = Category.objects.all()
     products = Product.objects.all()
@@ -137,32 +162,6 @@ def product_detail(request, product_id):
     product = get_object_or_404(Product, pk=product_id)
     categories = Category.objects.all()
     return render(request, 'landingPage/product.html', {'product': product, 'categories': categories})
-
-
-def search(request):
-    query = request.GET.get('query')
-    search_history = request.COOKIES.get('search_history', '')
-
-    if query:
-        products = Product.objects.filter(name__icontains=query)
-
-        # Update search history
-        if search_history:
-            search_history_list = search_history.split('|')
-            if query not in search_history_list:
-                search_history_list.append(query)
-            search_history = '|'.join(search_history_list[-5:])  # Limit history to last 5 searches
-        else:
-            search_history = query
-    else:
-        products = Product.objects.none()
-
-    response = render(request, 'landingPage/search_results.html', {'products': products, 'query': query, 'search_history': search_history.split('|') if search_history else []})
-
-    # Set the updated search history in the cookies
-    response.set_cookie('search_history', search_history, max_age=30*24*60*60)  # Cookie expires in 30 days
-
-    return response
 
 
 def cart(request):
@@ -194,7 +193,6 @@ def add_to_cart(request, product_id):
 
     return redirect(request.META.get('HTTP_REFERER'))
 
-@login_required(login_url='landingPage:login')
 def remove_from_cart(request, product_id):
     cart = request.session.get('cart', {})
     if str(product_id) in cart:
@@ -202,7 +200,6 @@ def remove_from_cart(request, product_id):
         request.session.modified = True
     return redirect('landingPage:cart')
 
-@login_required(login_url='landingPage:login')
 def update_cart_quantity(request, product_id, action):
     cart = request.session.get('cart', {})
     if str(product_id) in cart:
@@ -226,20 +223,17 @@ def checkout(request):
     total_cart_price = sum(product.price * cart[str(product.id)] for product in products)
     shipping_cost = Decimal('3.00')  # Convert shipping cost to Decimal
     total_price_with_shipping = total_cart_price + shipping_cost
-    cart_count = sum(cart.values())
 
     if request.method == 'POST':
         form = OrderForm(request.POST)
         if form.is_valid():
             for product in products:
-                quantity = cart.get(str(product.id), 0)
-                if quantity > 0:  # Only create orders for products that have a non-zero quantity
-                    order = form.save(commit=False)
-                    order.customer = Customer.objects.get(id=customer_id)
-                    order.product = product
-                    order.quantity = cart_count
-                    order.price = product.price * quantity
-                    order.save()
+                order = form.save(commit=False)
+                order.customer = Customer.objects.get(id=customer_id)
+                order.product = product
+                order.quantity = cart.get(str(product.id))
+                order.price = product.price
+                order.save()
             request.session['cart'] = {}
             return redirect('landingPage:cart')
     else:
@@ -255,6 +249,14 @@ def checkout(request):
 
     return render(request, 'landingPage/checkout.html', context)
 
+def testimonial(request):
+    """View function for rendering the testimonial page."""
+    return render(request, 'testimonial.html')
+
+def page_404(request, exception):
+    """View function for rendering the 404 page."""
+    return render(request, '404.html')
+
 def contact(request):
     if request.method == 'POST':
         return redirect('landingPage:index')
@@ -267,12 +269,74 @@ def product_list(request):
     }
     return render(request, 'landingPage/product_list.html', context)
 
-@login_required(login_url='login')
 def order(request):
         customer = request.session.get('customer')
         orders = Order.get_orders_by_customer(customer)
         print(orders)
         return render(request , 'landingPage/order.html'  , {'orders' : orders})
+
+# Create your views here.
+class Index(View):
+
+    def post(self , request):
+        product = request.POST.get('product')
+        remove = request.POST.get('remove')
+        cart = request.session.get('cart')
+        if cart:
+            quantity = cart.get(product)
+            if quantity:
+                if remove:
+                    if quantity<=1:
+                        cart.pop(product)
+                    else:
+                        cart[product]  = quantity-1
+                else:
+                    cart[product]  = quantity+1
+
+            else:
+                cart[product] = 1
+        else:
+            cart = {}
+            cart[product] = 1
+
+        request.session['cart'] = cart
+        print('cart' , request.session['cart'])
+        return redirect('homepage')
+
+
+
+    def get(self , request):
+        # print()
+        return HttpResponseRedirect(f'/store{request.get_full_path()[1:]}')
+
+def store(request):
+    cart = request.session.get('cart')
+    if not cart:
+        request.session['cart'] = {}
+    products = None
+    categories = Category.get_all_categories()
+    categoryID = request.GET.get('category')
+    if categoryID:
+        products = Product.get_all_products_by_categoryid(categoryID)
+    else:
+        products = Product.get_all_products();
+
+    data = {}
+    data['products'] = products
+    data['categories'] = categories
+
+    print('you are : ', request.session.get('email'))
+    return render(request, 'landinPage/index.html', data)
+
+# @login_required(login_url='login')
+# def add_to_cart(request, product_id):
+#     cart = request.session.get('cart', {})
+#     if product_id in cart:
+#         cart[product_id] += 1
+#     else:
+#         cart[product_id] = 1
+#     request.session['cart'] = cart
+#     return redirect('landingPage:product_detail', product_id=product_id)
 
 @login_required(login_url='login')
 def user_history(request):
@@ -288,6 +352,18 @@ def user_history(request):
     # Pass the order details to the template for rendering
     return render(request, 'landingPage/user_history.html',
                   {'order_details': order_details})
+
+
+def profileTemp(request):
+    if request.user.is_authenticated:
+        #customer = Customer.get_customer_by_email(request.user.email)
+        print(request.user.email)
+        #print(customer)
+        #if customer:
+        #return render(request, 'profile_page/profile1.html', {'customer': customer})
+        return HttpResponse(request.user.email)
+    else:
+        return HttpResponse("not!")
 
 def about_us(request):
     return render(request, 'landingPage/about_us.html')

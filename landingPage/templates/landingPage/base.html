@@ -60,7 +60,7 @@
                         <a href="{% url 'landingPage:index' %}" class="nav-item nav-link">Home</a>
                         <a href="{% url 'landingPage:shop' %}" class="nav-item nav-link">Shop</a>
                         {% if request.session.customer %}
-                        <a href="{% url 'landingPage:orders' %}" class="nav-item nav-link">My Orders</a>
+                        <a href="{% url 'landingPage:order_detail' %}" class="nav-item nav-link">My Orders</a>
                         {% endif %}
                         <a href="{% url 'landingPage:contact' %}" class="nav-item nav-link">Contact</a>
                         <a href="{% url 'landingPage:about_us' %}" class="nav-item nav-link">About Us</a>
